@@ -1,4 +1,4 @@
-package com.floriano.login_system_backend_maven.model.user;
+package com.floriano.login_system_backend_maven.model.User;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.List;
 
 @Table(name = "users")
-@Entity(name = "users")
+@Entity
 @Getter
 @Setter
 @NoArgsConstructor

@@ -3,7 +3,7 @@ package com.floriano.login_system_backend_maven.infra.security;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
-import com.floriano.login_system_backend_maven.model.user.User;
+import com.floriano.login_system_backend_maven.model.User.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 

@@ -25,18 +25,20 @@ citações, com foco em uso educacional e exploração livre por estudantes, ent
 
 ### 🧑‍🎓 Philosopher
 
-| Campo          | Tipo              | Descrição                     |
-|----------------|-------------------|-------------------------------|
-| `id`           | UUID              | Identificador único           |
-| `name`         | String            | Nome completo                 |
-| `birthYear`    | Int               | Ano de nascimento             |
-| `deathYear`    | Int?              | Ano de falecimento (nullable) |
-| `country`      | String            | País de origem                |
-| `schoolId`     | UUID              | Escola filosófica associada   |
-| `bio`          | Text              | Biografia resumida            |
-| `mainWorks`    | List<Work>        | Obras principais              |
-| `influencedBy` | List<Philosopher> | Obras principais              |
-| `themes`       | List<Themes>      | Temas tratados em sua obra    |
+| Campo             | Tipo                  | Descrição                      |
+|-------------------|-----------------------|--------------------------------|
+| `id`              | UUID                  | Identificador único            |
+| `name`            | String                | Nome completo                  |
+| `birthYear`       | Int                   | Ano de nascimento              |
+| `deathYear`       | Int?                  | Ano de falecimento (nullable)  |
+| `country`         | Country               | País de origem                 |
+| `bio`             | Text                  | Biografia resumida             |
+| `schoolOfThought` | List<SchoolOfThought> | tradição que filósofo pertence |
+| `works`           | List<Work>            | Obras do filósofo              |
+| `influenced`      | List<Infleunce>       | filósofos que ele influenciou  |
+| `influencedBy`    | List<Infleunce>       | filósofos que o influenciaram  |
+| `themes`          | List<Themes>          | Temas tratados em sua obra     |
+| `quotes`          | List<Quote>           | Citações do filósofo           |
 
 ---
 
@@ -53,15 +55,38 @@ citações, com foco em uso educacional e exploração livre por estudantes, ent
 
 ---
 
+### 🧑 Country
+
+| Campo       | Tipo     | Descrição                      |
+|-------------|----------|--------------------------------|
+| `id`        | UUID     | Identificador único            |
+| `name`      | String   | Nome oficial do país           |
+| `isoCode`   | String?  | Código ISO                     |
+| `startYear` | Int      | Ano de fundação                |
+| `endYear`   | Int?     | Ano de extinção                |
+| `notes`     | String?  | Observações                    |
+| `region`    | String?  | Continente/região geopolítica  |
+
+---
+
+### 🧑🧑 Infleunce
+
+| Campo        | Tipo    | Descrição                                 |
+|--------------|---------|-------------------------------------------|
+| `id`         | UUID    | Identificador único                       |
+| `influencer` | String  | Filósofo que inflûenciou na relação       |
+| `influenced` | String  | Filósofo que foi influenciado             |
+| `strength`   | Int     | Grau da inflûencia( baixam média e forte) |
+
 ### 💭 Theme
 
-| Campo          | Tipo              | Descrição                              |
-|----------------|-------------------|----------------------------------------|
-| `id`           | UUID              | Identificador único                    |
-| `name`    | String            | Nome da corrente (ex: Existencialismo) |
-| `desc`         | String            | Descrição geral do tema                |
-| `philosophers` | List<Philosopher> | Filósofos que tratam de tal tema       |
-| `works`        | List<Work>        | Trabalhos que tratam de tal tema       |
+| Campo          | Tipo              | Descrição                               |
+|----------------|-------------------|-----------------------------------------|
+| `id`           | UUID              | Identificador único                     |
+| `name`         | String            | Nome da corrente (ex: Existencialismo)  |
+| `desc`         | String            | Descrição geral do tema                 |
+| `philosophers` | List<Philosopher> | Filósofos que tratam de tal tema        |
+| `works`        | List<Work>        | Trabalhos que tratam de tal tema        |
 
 ---
 
@@ -80,23 +105,26 @@ citações, com foco em uso educacional e exploração livre por estudantes, ent
 
 ### 💬 Quote
 
-| Campo    | Tipo        | Descrição                  |
-|----------|-------------|----------------------------|
-| `id`     | UUID        | Identificador único        |
-| `text`   | Text        | Conteúdo da citação        |
-| `themes` | List<Theme> | Temas (liberdade, moral)   |
-| `work`   | Work?       | Obra de origem (se houver) |
-| `author` | Author      | Autor da citação           |
+| Campo         | Tipo        | Descrição                  |
+|---------------|-------------|----------------------------|
+| `id`          | UUID        | Identificador único        |
+| `text`        | Text        | Conteúdo da citação        |
+| `themes`      | List<Theme> | Temas (liberdade, moral)   |
+| `work`        | Work?       | Obra de origem (se houver) |
+| `philosopher` | Philosopher | Autor da citação           |
 
 ---
 
 ## 3. 🔗 Relacionamentos
 
-- Um **Philosopher** pertence a uma **SchoolOfThought**
-- Um **Philosopher** pode ter influenciado vários outros **Philosopher**
+- Um **Philosopher** pode pertence a varias **SchoolOfThought**
+- Um **Philosopher** pode ter várias **Influences** 
 - Um **Philosopher** pode ter vários **Works** e **Quotes**
+- Um **Philosopher** pertence apenas à um **country**
 - Uma **SchoolOfThought** pode possuir vários **Philosopher**
 - Uma **SchoolOfThought** pode possuir vários **Work**
+- Um **Country** possui apenas um  **Philosopher**
+- Uma **Influence** pode ter várias **Philosopher**
 - Um **Work** pertence a um filósofo **Philosopher**
 - Um **Work** pode ter vários **Theme**
 - Uma **Quote** pode vir de uma **Work**, mas não obrigatoriamente
@@ -134,40 +162,41 @@ citações, com foco em uso educacional e exploração livre por estudantes, ent
 | bornBefore | int     | Não         | 1900           | Filtrar nascidos antes de um ano               |
 | sortBy     | string  | Não         | publishedAfter | Campo de ordenação                               |
 | order      | string  | Não         | asc ou desc    | Ordem da ordenação                               |
-| offSet     | int     | Não         | 0              | Posição inicial dos dados recuperados            |
+| offset     | int     | Não         | 0              | Posição inicial dos dados recuperados            |
 | limit      | int     | Não         | 10             | específica o número máximo de objetos retornados |
 
 ---
 
 ### 🏫 Schools of Thought
 
-| Método | Rota                                | Descrição                                    |
-|--------|-------------------------------------|----------------------------------------------|
-| GET    | `/api/v1/schools`                   | Listar todas as escolas                      |
-| GET    | `/api/v1/schools/:id`               | Detalhes de uma escola                       |
-| GET    | `/api/v1/schools/:id/philoshophers` | todos os filósofos associados a tal tradição |
-| GET    | `/api/v1/schools/search`            | Filtro avançado por parâmetros               |
-| POST   | `/api/v1/schools`                   | Criar nova escola filosófica                 |
-| PUT    | `/api/v1/schools/:id`               | Atualizar escola filosófica                  |
-| DELETE | `/api/v1/schools`                   | Deletar escola filosófica                    |
+| Método | Rota                               | Descrição                                     |
+|--------|------------------------------------|-----------------------------------------------|
+| GET    | `/api/v1/schools`                  | Listar todas as escolas                       |
+| GET    | `/api/v1/schools/:id`              | Detalhes de uma escola                        |
+| GET    | `/api/v1/schools/:id/philosophers` | todos os filósofos associados a tal tradição  |
+| GET    | `/api/v1/schools/:id/works`        | todos as obras relacionadas com tal tradição  |
+| GET    | `/api/v1/schools/search`           | Filtro avançado por parâmetros                |
+| POST   | `/api/v1/schools`                  | Criar nova escola filosófica                  |
+| PUT    | `/api/v1/schools/:id`              | Atualizar escola filosófica                   |
+| DELETE | `/api/v1/schools`                  | Deletar escola filosófica                     |
 
 #### 🔍 Parâmetros de busca para /schools/search
 
 | Parâmetro           | Tipo    | Obrigatório | Exemplo             | Descrição                                        |
 |---------------------|---------|-------------|---------------------|--------------------------------------------------|
-| nameSchool          | string  | Não         | Nietzsche           | Escola filosófica associada a obra               |
+| name                | string  | Não         | Nietzsche           | Escola filosófica associada a obra               |
 | country             | string  | Não         | Alemanha            | País de origem                                   |
 | themes              | string  | Não         | niilismo            | Temas tratados na obra                           |
 | origenCenturyAfter  | int     | Não         | 1800                | Filtrar publicados depois de um ano              |
 | origenCenturyBefore | int     | Não         | 1900                | Filtrar publicados antes de um ano               |
 | sortBy              | string  | Não         | publishedAfter      | Campo de ordenação                               |
 | order               | string  | Não         | asc ou desc         | Ordem da ordenação                               |
-| offSet              | int     | Não         | 0                   | Posição inicial dos dados recuperados            |
+| offset              | int     | Não         | 0                   | Posição inicial dos dados recuperados            |
 | limit               | int     | Não         | 10                  | específica o número máximo de objetos retornados |
 
 ---
 
-### 🏫 Theme
+###  Theme
 
 | Método | Rota                               | Descrição                                         |
 |--------|------------------------------------|---------------------------------------------------|
@@ -189,7 +218,7 @@ citações, com foco em uso educacional e exploração livre por estudantes, ent
 | originCenturyBefore | int     | Não         | 1900            | Filtrar publicados antes de um ano               |
 | sortBy              | string  | Não         | publishedAfter  | Campo de ordenação                               |
 | order               | string  | Não         | asc ou desc     | Ordem da ordenação                               |
-| offSet              | int     | Não         | 0               | Posição inicial dos dados recuperados            |
+| offset              | int     | Não         | 0               | Posição inicial dos dados recuperados            |
 | limit               | int     | Não         | 10              | específica o número máximo de objetos retornados |
 
 ---
@@ -218,7 +247,7 @@ citações, com foco em uso educacional e exploração livre por estudantes, ent
 | publishedBefore | int     | Não         | 1900                | Filtrar publicações antes de um ano              |
 | sortBy          | string  | Não         | publishedAfter      | Campo de ordenação                               |
 | order           | string  | Não         | asc ou desc         | Ordem da ordenação                               |
-| offSet          | int     | Não         | 0                   | Posição inicial dos dados recuperados            |
+| offset          | int     | Não         | 0                   | Posição inicial dos dados recuperados            |
 | limit           | int     | Não         | 10                  | específica o número máximo de objetos retornados |
 
 ---
@@ -243,26 +272,70 @@ citações, com foco em uso educacional e exploração livre por estudantes, ent
 | theme     | string  | Não         | niilismo            | Temas associados a citação                       |
 | sortBy    | string  | Não         | publishedAfter      | Campo de ordenação                               |
 | order     | string  | Não         | asc ou desc         | Ordem da ordenação                               |
-| offSet    | int     | Não         | 0                   | Posição inicial dos dados recuperados            |
+| offset    | int     | Não         | 0                   | Posição inicial dos dados recuperados            |
 | limit     | int     | Não         | 10                  | específica o número máximo de objetos retornados |
 
 ---
 
-### 🔁 Relações de Influência
+### 🧩 Relacionamentos Úteis para Country
 
-| Método | Rota                                     | Descrição                       |
-|--------|------------------------------------------|---------------------------------|
-| GET    | `/api/v1/philosophers/:id/influences`    | Quem influenciou esse filósofo  |
-| GET    | `/api/v1/philosophers/:id/influenced-by` | Quem esse filósofo influenciou  |
-| POST   | `/api/v1/influence`                      | Cadastrar relação de influência |
+| Método  | Rota                                 | Descrição                                     |
+|---------|--------------------------------------|-----------------------------------------------|
+| GET     | `/api/v1/countries`                  | Listar todos os países (históricos e atuais)  |
+| GET     | `/api/v1/countries/:id`              | Detalhes de um país                           |
+| GET     | `/api/v1/countries/:id/philosophers` | Detalhes de um país                           |
+| GET     | `/api/v1/countries/:id/works`        | Filósofos nascidos nesse país                 |
+| GET     | `/api/v1/countries/:id/themes`       | Obras associadas a filósofos desse país       |
+| GET     | `/api/v1/countries/:id/themes`       | Detalhes de um país                           |
+| GET     | `/api/v1/countries/search`           | Filtro avançado por nome, região etc          |
+| POST    | `/api/v1/countries`                  | Criar um novo país                            |
+| PUT     | `/api/v1/countries/:id`              | Atualizar dados de um país                    |
+| DELETE  | `/api/v1/countries/:id`              | Deletar país                                  |
+
+#### 🔍 Parâmetros para /countries/search
+
+| Parâmetro    | Tipo     | Exemplo          | Descrição                             |
+|--------------|----------|------------------|---------------------------------------|
+| name         | string   | "Persian Empire" | Nome total ou parcial do país         |
+| region       | string   | "Europe"         | Filtrar por região                    |
+| stillExists  | boolean  | true             | Se ainda existe (`endYear` é `null`)  |
+| isoCode      | string   | "FR"             | Código ISO (quando aplicável)         |
+| afterYear    | int      | 1800             | Fundados após esse ano                |
+| beforeYear   | int      | 1900             | Fundados antes desse ano              |
+| sortBy       | string   | "startYear"      | Campo de ordenação                    |
+| order        | string   | "asc"            | Ordem: crescente ou decrescente       |
+| offset       | int      | 0                | Posição inicial dos dados recuperados |
+| limit        | int      | 20               | Máximo de países retornados           |
+
+---
+
+### 🧑🧑 endpoints  para Influence
+
+| Método    | Rota                                 | Descrição                             |
+|-----------|--------------------------------------|---------------------------------------|
+| GET       | `/api/v1/influences`                 | Lista todas as relações de influência |
+| GET       | `/api/v1/influences/:id`             | Detalhes de uma relação específica    |
+| GET       | `/api/v1/countries/:id/philosophers` | Detalhes de um país                   |
+| GET       | `/api/v1/influences/search`          | Filtro avançado por nome, região etc  |
+| POST      | `/api/v1/influences`                 | Criar nova relação de influência      |
+| PUT       | `/api/v1/influences/:id`             | Atualizar força ou IDs da relação     |
+| DELETE    | `/api/v1/influences/:id`             | Remover relação de influência         |
+
+#### 🔍 Parâmetros para /influences/search
+
+| Parâmetro  | Tipo   | Exemplo   | Descrição                                 |
+|------------|--------|-----------|-------------------------------------------|
+| influencer | string | Nietzsche | Nome do influenciador                     |
+| influenced | string | Sartre    | Nome do influenciado                      |
+| strength   | int    | 2         | Grau da influência (1 = baixa, 3 = forte) |
+| sortBy     | string | strength  | Campo para ordenação                      |
+| order      | string | asc       | asc ou desc                               |
+| offset     | int    | 0         | Posição inicial                           |
+| limit      | int    | 10        | Máximo de registros                       |
+
 
 ---
 
 ## 5. 🧪 Filtros e Parâmetros de Consulta
 
 Exemplos úteis de filtros:
-
-```http
-GET /api/v1/philosophers?school=Existencialismo&century=19
-GET /api/v1/quotes?theme=liberdade
-GET /api/v1/work s?author=Dostoiévski&tag=culpa

@@ -1,4 +1,4 @@
-package com.floriano.login_system_backend_maven.model.user;
+package com.floriano.login_system_backend_maven.model.User;
 
 public enum UserRole {
     ADMIN("admin"),

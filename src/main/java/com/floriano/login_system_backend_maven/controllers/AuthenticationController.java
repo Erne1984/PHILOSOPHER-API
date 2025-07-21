@@ -2,7 +2,7 @@ package com.floriano.login_system_backend_maven.controllers;
 
 import com.floriano.login_system_backend_maven.dto.AuthDto.AutheticationDto;
 import com.floriano.login_system_backend_maven.dto.AuthDto.RegisterDto;
-import com.floriano.login_system_backend_maven.model.user.User;
+import com.floriano.login_system_backend_maven.model.User.User;
 import com.floriano.login_system_backend_maven.infra.security.TokenService;
 import com.floriano.login_system_backend_maven.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -5,7 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class LoginSystemBackendMavenApplication {
+public class PhilosophyApi {
 
 	public static void main(String[] args) {
 
@@ -14,7 +14,7 @@ public class LoginSystemBackendMavenApplication {
 			System.setProperty(entry.getKey(), entry.getValue());
 		});
 
-		SpringApplication.run(LoginSystemBackendMavenApplication.class, args);
+		SpringApplication.run(PhilosophyApi.class, args);
 	}
 
 }
