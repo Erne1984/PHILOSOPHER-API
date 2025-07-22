@@ -1,12 +1,10 @@
 package com.floriano.login_system_backend_maven.infra.security;
 
-import com.floriano.login_system_backend_maven.repositories.UserRepository;
+import com.floriano.login_system_backend_maven.repositories.UserRepository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.antlr.v4.runtime.Token;
-import org.hibernate.annotations.Comment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;

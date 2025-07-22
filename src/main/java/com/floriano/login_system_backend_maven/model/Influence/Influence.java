@@ -1,19 +1,17 @@
 package com.floriano.login_system_backend_maven.model.Influence;
 
 import com.floriano.login_system_backend_maven.model.Philosopher.Philosopher;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-
-import java.util.UUID;
+import jakarta.persistence.*;
+import lombok.ToString;
 
 @Entity
 @Table(name = "influences")
+@ToString
 public class Influence {
 
     @Id
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @ManyToOne
     private Philosopher influencer;
@@ -21,5 +19,6 @@ public class Influence {
     @ManyToOne
     private Philosopher influenced;
 
-    private int strength;
+    @Enumerated(EnumType.STRING)
+    private InfluenceStrength strength;
 }

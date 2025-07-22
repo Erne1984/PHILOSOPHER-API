@@ -57,49 +57,52 @@ citações, com foco em uso educacional e exploração livre por estudantes, ent
 
 ### 🧑 Country
 
-| Campo       | Tipo     | Descrição                      |
-|-------------|----------|--------------------------------|
-| `id`        | UUID     | Identificador único            |
-| `name`      | String   | Nome oficial do país           |
-| `isoCode`   | String?  | Código ISO                     |
-| `startYear` | Int      | Ano de fundação                |
-| `endYear`   | Int?     | Ano de extinção                |
-| `notes`     | String?  | Observações                    |
-| `region`    | String?  | Continente/região geopolítica  |
+| Campo           | Tipo               | Descrição                                    |
+|-----------------|--------------------|----------------------------------------------|
+| `id`            | UUID               | Identificador único                          |
+| `name`          | String             | Nome oficial do país                         |
+| `isoCode`       | String?            | Código ISO                                   |
+| `startYear`     | Int                | Ano de fundação                              |
+| `endYear`       | Int?               | Ano de extinção                              |
+| `region`        | String?            | Continente/região geopolítica                |
+| `philosophers`  | List<Philosopher>? | Filósofos de tal nação                       |
+| `works`         | List<Work>?        | Trabalhos de filósofos nascidos em tal nação |
 
 ---
 
-### 🧑🧑 Infleunce
+### 🧑🧑 Influence
 
-| Campo        | Tipo    | Descrição                                 |
-|--------------|---------|-------------------------------------------|
-| `id`         | UUID    | Identificador único                       |
-| `influencer` | String  | Filósofo que inflûenciou na relação       |
-| `influenced` | String  | Filósofo que foi influenciado             |
-| `strength`   | Int     | Grau da inflûencia( baixam média e forte) |
+| Campo        | Tipo          | Descrição                                 |
+|--------------|---------------|-------------------------------------------|
+| `id`         | UUID          | Identificador único                       |
+| `influencer` | Philosopher   | Filósofo que inflûenciou na relação       |
+| `influenced` | Philosopher   | Filósofo que foi influenciado             |
+| `strength`   | Int           | Grau da inflûencia( baixam média e forte) |
 
 ### 💭 Theme
 
-| Campo          | Tipo              | Descrição                               |
-|----------------|-------------------|-----------------------------------------|
-| `id`           | UUID              | Identificador único                     |
-| `name`         | String            | Nome da corrente (ex: Existencialismo)  |
-| `desc`         | String            | Descrição geral do tema                 |
-| `philosophers` | List<Philosopher> | Filósofos que tratam de tal tema        |
-| `works`        | List<Work>        | Trabalhos que tratam de tal tema        |
+| Campo          | Tipo              | Descrição                              |
+|----------------|-------------------|----------------------------------------|
+| `id`           | UUID              | Identificador único                    |
+| `name`         | String            | Nome da corrente (ex: Existencialismo) |
+| `desc`         | String            | Descrição geral do tema                |
+| `philosophers` | List<Philosopher> | Filósofos que tratam de tal tema       |
+| `works`        | List<Work>        | Trabalhos que tratam de tal tema       |
+| `quotes`       | List<Quote>       | Citações relacionadas com o tema       |
 
 ---
 
 ### 📘 Work
 
-| Campo         | Tipo         | Descrição           |
-|---------------|--------------|---------------------|
-| `id`          | UUID         | Identificador único |
-| `title`       | String       | Título da obra      |
-| `year`        | Int          | Ano de publicação   |
-| `summary`     | Text         | Resumo ou sinopse   |
-| `philosopher` | Philoshopher | Autor               |
-| `themes`      | List<Theme>  | Temas tratados      |
+| Campo              | Tipo                   | Descrição                                 |
+|--------------------|------------------------|-------------------------------------------|
+| `id`               | UUID                   | Identificador único                       |
+| `title`            | String                 | Título da obra                            |
+| `year`             | Int                    | Ano de publicação                         |
+| `summary`          | Text                   | Resumo ou sinopse                         |
+| `philosopher`      | Philoshopher           | Autor                                     |
+| `schoolsOfThought` | List<SchoolOfThought>  | Correntes filosóficas relacionadas à obra |
+| `themes`           | List<Theme>            | Temas tratados                            |
 
 ---
 
@@ -108,7 +111,7 @@ citações, com foco em uso educacional e exploração livre por estudantes, ent
 | Campo         | Tipo        | Descrição                  |
 |---------------|-------------|----------------------------|
 | `id`          | UUID        | Identificador único        |
-| `text`        | Text        | Conteúdo da citação        |
+| `content`     | Text        | Conteúdo da citação        |
 | `themes`      | List<Theme> | Temas (liberdade, moral)   |
 | `work`        | Work?       | Obra de origem (se houver) |
 | `philosopher` | Philosopher | Autor da citação           |
@@ -123,7 +126,7 @@ citações, com foco em uso educacional e exploração livre por estudantes, ent
 - Um **Philosopher** pertence apenas à um **country**
 - Uma **SchoolOfThought** pode possuir vários **Philosopher**
 - Uma **SchoolOfThought** pode possuir vários **Work**
-- Um **Country** possui apenas um  **Philosopher**
+- Um **Country** pode possuir vários  **Philosopher**
 - Uma **Influence** pode ter várias **Philosopher**
 - Um **Work** pertence a um filósofo **Philosopher**
 - Um **Work** pode ter vários **Theme**

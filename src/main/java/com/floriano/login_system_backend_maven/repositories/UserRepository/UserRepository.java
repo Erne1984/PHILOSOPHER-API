@@ -1,4 +1,4 @@
-package com.floriano.login_system_backend_maven.repositories;
+package com.floriano.login_system_backend_maven.repositories.UserRepository;
 
 import com.floriano.login_system_backend_maven.model.User.User;
 import org.springframework.data.jpa.repository.JpaRepository;
