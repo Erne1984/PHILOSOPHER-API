@@ -48,7 +48,7 @@ citações, com foco em uso educacional e exploração livre por estudantes, ent
 |-----------------|-------------------|----------------------------------------|
 | `id`            | UUID              | Identificador único                    |
 | `name`          | String            | Nome da corrente (ex: Existencialismo) |
-| `desc`          | Text              | Descrição geral da escola              |
+| `description`   | Text              | Descrição geral da escola              |
 | `originCentury` | int               | Século/origem histórica                |
 | `philosophers`  | List<Philosopher> | Filósofos encaixados em tal tradição   |
 | `works`         | List<Work>        | Trabalhos encaixados em tal tradição   |
