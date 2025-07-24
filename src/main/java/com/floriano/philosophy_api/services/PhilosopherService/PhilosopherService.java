@@ -1,5 +1,9 @@
 package com.floriano.philosophy_api.services.PhilosopherService;
 
+import com.floriano.philosophy_api.dto.PhilosopherDto.PhilosopherRequestDTO;
+import com.floriano.philosophy_api.exceptions.PhilosopherAlreadyExistsException;
+import com.floriano.philosophy_api.exceptions.PhilosopherIdNotFoundException;
+import com.floriano.philosophy_api.mapper.PhilosopherMapper;
 import com.floriano.philosophy_api.model.Country.Country;
 import com.floriano.philosophy_api.model.Philosopher.Philosopher;
 import com.floriano.philosophy_api.repositories.CountryRepository.CountryRepository;
@@ -19,16 +23,25 @@ public class PhilosopherService {
         this.countryRepository = countryRepository;
     }
 
-    public Philosopher createPhilosopher(Philosopher p) {
-        if (p.getCountry() != null) {
-            Country country = countryRepository.findById(p.getCountry().getId())
-                    .orElseThrow(() -> new IllegalArgumentException("País não encontrado"));
-            p.setCountry(country);
+    public Philosopher createPhilosopher(PhilosopherRequestDTO dto) {
+
+        if (philosopherRepository.existsByNameIgnoreCase(dto.getName())) {
+            throw new PhilosopherAlreadyExistsException("Filósofo com esse nome já existe");
         }
-        return philosopherRepository.save(p);
+
+        Country country = countryRepository.findById(dto.getCountryId())
+                .orElseThrow(() -> new IllegalArgumentException("País não encontrado"));
+
+        Philosopher philosopher = PhilosopherMapper.toEntity(dto, country);
+        return philosopherRepository.save(philosopher);
     }
 
-    public List<Philosopher> getAllPhilosopher() {
+    public List<Philosopher> getAllPhilosophers() {
         return philosopherRepository.findAll();
+    }
+
+    public Philosopher getPhilosopherById(Long id) {
+        return philosopherRepository.findById(id)
+                .orElseThrow(() -> new PhilosopherIdNotFoundException("Filósofo com ID " + id + " não encontrado"));
     }
 }

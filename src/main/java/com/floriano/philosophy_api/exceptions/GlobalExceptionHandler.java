@@ -18,4 +18,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Object>> handleNotFound(ResourceNotFoundException ex) {
         return new ResponseEntity<>(new ApiResponse<>(false, ex.getMessage(), null), HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(PhilosopherAlreadyExistsException.class)
+    public ResponseEntity<ApiResponse<Object>> handlePhilosopherAlreadyExists(PhilosopherAlreadyExistsException ex) {
+        return new ResponseEntity<>(new ApiResponse<>(false, ex.getMessage(), null), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(PhilosopherIdNotFoundException.class)
+    public ResponseEntity<ApiResponse<Object>> handlePhilosopherIdNotFound(PhilosopherAlreadyExistsException ex) {
+        return new ResponseEntity<>(new ApiResponse<>(false, ex.getMessage(), null), HttpStatus.BAD_REQUEST);
+    }
 }
