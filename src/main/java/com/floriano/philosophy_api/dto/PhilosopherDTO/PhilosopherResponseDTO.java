@@ -1,6 +1,5 @@
-package com.floriano.philosophy_api.dto.PhilosopherDto;
+package com.floriano.philosophy_api.dto.PhilosopherDTO;
 
-import com.floriano.philosophy_api.model.Country.Country;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

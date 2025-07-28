@@ -1,6 +1,6 @@
 package com.floriano.philosophy_api.services.PhilosopherService;
 
-import com.floriano.philosophy_api.dto.PhilosopherDto.PhilosopherRequestDTO;
+import com.floriano.philosophy_api.dto.PhilosopherDTO.PhilosopherRequestDTO;
 import com.floriano.philosophy_api.exceptions.PhilosopherAlreadyExistsException;
 import com.floriano.philosophy_api.exceptions.PhilosopherIdNotFoundException;
 import com.floriano.philosophy_api.mapper.PhilosopherMapper;

@@ -1,7 +1,7 @@
 package com.floriano.philosophy_api.mapper;
 
-import com.floriano.philosophy_api.dto.PhilosopherDto.PhilosopherRequestDTO;
-import com.floriano.philosophy_api.dto.PhilosopherDto.PhilosopherResponseDTO;
+import com.floriano.philosophy_api.dto.PhilosopherDTO.PhilosopherRequestDTO;
+import com.floriano.philosophy_api.dto.PhilosopherDTO.PhilosopherResponseDTO;
 import com.floriano.philosophy_api.model.Country.Country;
 import com.floriano.philosophy_api.model.Philosopher.Philosopher;
 

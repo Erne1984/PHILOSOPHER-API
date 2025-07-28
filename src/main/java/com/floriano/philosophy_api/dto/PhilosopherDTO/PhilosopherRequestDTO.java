@@ -1,4 +1,4 @@
-package com.floriano.philosophy_api.dto.PhilosopherDto;
+package com.floriano.philosophy_api.dto.PhilosopherDTO;
 
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
