@@ -1,7 +1,7 @@
 package com.floriano.philosophy_api.model.Influence;
 
 public enum InfluenceStrength {
-    WEAK("small", 1),
+    WEAK("weak", 1),
     MEDIUM("medium", 2),
     STRONG("strong", 3);
 
