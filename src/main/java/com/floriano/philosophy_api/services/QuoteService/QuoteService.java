@@ -1,6 +1,7 @@
 package com.floriano.philosophy_api.services.QuoteService;
 
 import com.floriano.philosophy_api.dto.QuoteDTO.QuoteRequestDTO;
+import com.floriano.philosophy_api.dto.QuoteDTO.QuoteResponseDTO;
 import com.floriano.philosophy_api.mapper.QuoteMapper;
 import com.floriano.philosophy_api.model.Philosopher.Philosopher;
 import com.floriano.philosophy_api.model.Quote.Quote;
@@ -9,6 +10,8 @@ import com.floriano.philosophy_api.repositories.PhilosopherRepository.Philosophe
 import com.floriano.philosophy_api.repositories.QuoteRepository.QuoteRepository;
 import com.floriano.philosophy_api.repositories.WorkRepository.WorkRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class QuoteService {
@@ -21,6 +24,16 @@ public class QuoteService {
         this.quoteRepository = quoteRepository;
         this.philosopherRepository = philosopherRepository;
         this.workRepository = workRepository;
+    }
+
+    public List<QuoteResponseDTO> getAllQuotes() {
+        List<Quote> quotes = quoteRepository.findAll();
+
+        List<QuoteResponseDTO> quoteResponseDTOList = quotes.stream()
+                .map(QuoteMapper::toDTO)
+                .toList();
+
+        return quoteResponseDTOList;
     }
 
 

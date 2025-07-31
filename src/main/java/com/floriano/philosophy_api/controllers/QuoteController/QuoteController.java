@@ -8,10 +8,9 @@ import com.floriano.philosophy_api.payload.ApiResponse;
 import com.floriano.philosophy_api.services.QuoteService.QuoteService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("quotes")
@@ -21,6 +20,13 @@ public class QuoteController {
 
     public QuoteController(QuoteService quoteService) {
         this.quoteService = quoteService;
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<QuoteResponseDTO>>> getQuotes() {
+        List<QuoteResponseDTO> dtoList = quoteService.getAllQuotes();
+
+        return ResponseEntity.ok(new ApiResponse<>(true, "Quotes List", dtoList));
     }
 
     @PostMapping

@@ -5,6 +5,9 @@ import com.floriano.philosophy_api.dto.PhilosopherDTO.PhilosopherResponseDTO;
 import com.floriano.philosophy_api.model.Country.Country;
 import com.floriano.philosophy_api.model.Philosopher.Philosopher;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class PhilosopherMapper {
 
     public static Philosopher toEntity(PhilosopherRequestDTO dto, Country country) {
@@ -26,7 +29,10 @@ public class PhilosopherMapper {
                 philosopher.getBirthYear(),
                 philosopher.getDeathYear(),
                 philosopher.getBio(),
-                philosopher.getCountry().getName()
+                philosopher.getCountry().getName(),
+                philosopher.getQuotes() != null
+                        ? philosopher.getQuotes().stream().map(quote -> quote.getContent()).collect(Collectors.toList())
+                        : List.of()
         );
     }
 }

@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -18,5 +20,5 @@ public class PhilosopherResponseDTO {
     private String bio;
     private String country;
 
-
+    private List<String> quotesContent;
 }

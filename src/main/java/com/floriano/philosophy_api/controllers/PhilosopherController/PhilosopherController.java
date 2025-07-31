@@ -2,6 +2,7 @@ package com.floriano.philosophy_api.controllers.PhilosopherController;
 
 import com.floriano.philosophy_api.dto.PhilosopherDTO.PhilosopherRequestDTO;
 import com.floriano.philosophy_api.dto.PhilosopherDTO.PhilosopherResponseDTO;
+import com.floriano.philosophy_api.dto.QuoteDTO.QuoteResponseDTO;
 import com.floriano.philosophy_api.mapper.PhilosopherMapper;
 import com.floriano.philosophy_api.model.Philosopher.Philosopher;
 import com.floriano.philosophy_api.payload.ApiResponse;
@@ -37,6 +38,17 @@ public class PhilosopherController {
         Philosopher philosopher = philosopherService.getPhilosopherById(id);
         PhilosopherResponseDTO dto = PhilosopherMapper.toDTO(philosopher);
         return ResponseEntity.ok(new ApiResponse<>(true, "Filósofo encontrado", dto));
+    }
+
+    @GetMapping("/{id}/quotes")
+    public ResponseEntity<ApiResponse<List<QuoteResponseDTO>>> getQuotesByPhilosopher(@PathVariable Long id) {
+
+        List<QuoteResponseDTO> responseDTOS = philosopherService.getQuotesByPhilosopher(id);
+
+        if (responseDTOS.isEmpty()) {
+            return new ResponseEntity<>(new ApiResponse<>(true, "Quotes not found", List.of()), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(new ApiResponse<>(true, "Quotes found ", responseDTOS), HttpStatus.OK);
     }
 
     @PostMapping
