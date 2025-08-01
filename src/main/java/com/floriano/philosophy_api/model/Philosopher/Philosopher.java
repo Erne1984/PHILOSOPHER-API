@@ -62,4 +62,26 @@ public class Philosopher {
             inverseJoinColumns = @JoinColumn(name = "theme_id")
     )
     private List<Theme> themes;
+
+    // BIDIRECTIONALITY BETWEEN PHILOSOPHER AND THEME
+    public void addTheme(Theme theme) {
+        if (!themes.contains(theme)) {
+            themes.add(theme);
+            theme.getPhilosophers().add(this);
+        }
+    }
+
+    public void removeTheme(Theme theme) {
+        if (themes.contains(theme)) {
+            themes.remove(theme);
+            theme.getPhilosophers().remove(this);
+        }
+    }
+
+    public void clearThemes() {
+        for (Theme t : List.copyOf(themes)) {
+            removeTheme(t);
+        }
+    }
+
 }

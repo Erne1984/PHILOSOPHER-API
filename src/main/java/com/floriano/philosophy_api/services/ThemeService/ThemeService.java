@@ -14,6 +14,7 @@ import com.floriano.philosophy_api.repositories.PhilosopherRepository.Philosophe
 import com.floriano.philosophy_api.repositories.QuoteRepository.QuoteRepository;
 import com.floriano.philosophy_api.repositories.ThemeRepository.ThemeRepository;
 import com.floriano.philosophy_api.repositories.WorkRepository.WorkRepository;
+import com.floriano.philosophy_api.services.ThemeService.utils.ThemeUpdateHelper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -50,45 +51,18 @@ public class ThemeService {
     }
 
     public Theme updateTheme(Long id, ThemeRequestDTO dto) {
-
         Theme existing = themeRepository.findById(id)
                 .orElseThrow(() -> new ThemeIdNotFoundException("Theme not found"));
 
-        if (dto.getName() != null && !dto.getName().trim().isEmpty()) {
-            existing.setName(dto.getName().trim());
-        }
-
-        if (dto.getDescription() != null && !dto.getDescription().trim().isEmpty()) {
-            existing.setDescription(dto.getDescription().trim());
-        }
-
-        if (dto.getPhilosophersIds() != null) {
-            List<Long> requestedIds = dto.getPhilosophersIds();
-            List<Philosopher> philosophers = philosopherRepository.findAllById(requestedIds);
-            if (philosophers.size() != requestedIds.size()) {
-                throw new PhilosopherIdNotFoundException("One or more philosophers not found");
-            }
-            existing.setPhilosophers(philosophers);
-        }
-
-        if (dto.getWorksIds() != null) {
-            List<Long> requestedIds = dto.getWorksIds();
-            List<Work> works = workRepository.findAllById(requestedIds);
-            if (works.size() != requestedIds.size()) {
-                throw new WorkIdNotFoundException("One or more works not found");
-            }
-            existing.setWorks(works);
-        }
-
-        if (dto.getQuotesIds() != null) {
-            List<Long> requestedIds = dto.getQuotesIds();
-            List<Quote> quotes = quoteRepository.findAllById(requestedIds);
-            if (quotes.size() != requestedIds.size()) {
-                throw new QuoteIdNotFoundException("One or more works not found");
-            }
-            existing.setQuotes(quotes);
-        }
+        ThemeUpdateHelper.updateBasicFields(existing, dto);
+        ThemeUpdateHelper.updatePhilosophers(existing, dto.getPhilosophersIds(), philosopherRepository);
+        ThemeUpdateHelper.updateWorks(existing, dto.getWorksIds(), workRepository);
+        ThemeUpdateHelper.updateQuotes(existing, dto.getQuotesIds(), quoteRepository);
 
         return themeRepository.save(existing);
     }
+
+   /* public Theme deleteTheme(Long id) {
+
+    } */
 }

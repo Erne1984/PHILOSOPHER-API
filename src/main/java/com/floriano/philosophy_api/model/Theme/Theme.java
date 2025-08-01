@@ -32,4 +32,67 @@ public class Theme {
 
     @ManyToMany(mappedBy = "themes")
     private List<Quote> quotes;
+
+    // BIDIRECTIONALITY BETWEEN THEME AND PHILOSOPHER
+    public void addPhilosopher(Philosopher philosopher) {
+        if (!philosophers.contains(philosopher)) {
+            philosophers.add(philosopher);
+            philosopher.getThemes().add(this);
+        }
+    }
+
+    public void removePhilosopher(Philosopher philosopher) {
+        if (philosophers.contains(philosopher)) {
+            philosophers.remove(philosopher);
+            philosopher.getThemes().remove(this);
+        }
+    }
+
+    public void clearPhilosophers() {
+        for (Philosopher p : List.copyOf(philosophers)) {
+            removePhilosopher(p);
+        }
+    }
+
+    // BIDIRECTIONALITY BETWEEN THEME AND WORKS
+    public void addWork(Work work) {
+        if (!works.contains(work)) {
+            works.add(work);
+            work.getThemes().add(this);
+        }
+    }
+
+    public void removeWork(Work work) {
+        if (works.contains(work)) {
+            works.remove(work);
+            work.getThemes().remove(this);
+        }
+    }
+
+    public void clearWorks() {
+        for (Work w : List.copyOf(works)) {
+            removeWork(w);
+        }
+    }
+
+    // BIDIRECTIONALITY BETWEEN THEME AND QUOTES
+    public void addQuote(Quote quote) {
+        if (!quotes.contains(quote)) {
+            quotes.add(quote);
+            quote.getThemes().add(this);
+        }
+    }
+
+    public void removeQuote(Quote quote) {
+        if (quotes.contains(quote)) {
+            quotes.remove(quote);
+            quote.getThemes().remove(this);
+        }
+    }
+
+    public void clearQuotes() {
+        for (Quote q : List.copyOf(quotes)) {
+            removeQuote(q);
+        }
+    }
 }
