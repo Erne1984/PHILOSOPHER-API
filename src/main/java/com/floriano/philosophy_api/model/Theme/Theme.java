@@ -6,6 +6,7 @@ import com.floriano.philosophy_api.model.Work.Work;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Table(name = "themes")
@@ -25,13 +26,13 @@ public class Theme {
     private String description;
 
     @ManyToMany(mappedBy = "themes")
-    private List<Philosopher> philosophers;
+    private List<Philosopher> philosophers = new ArrayList<>();
 
     @ManyToMany(mappedBy = "themes")
-    private List<Work> works;
+    private List<Work> works = new ArrayList<>();
 
     @ManyToMany(mappedBy = "themes")
-    private List<Quote> quotes;
+    private List<Quote> quotes = new ArrayList<>();
 
     // BIDIRECTIONALITY BETWEEN THEME AND PHILOSOPHER
     public void addPhilosopher(Philosopher philosopher) {

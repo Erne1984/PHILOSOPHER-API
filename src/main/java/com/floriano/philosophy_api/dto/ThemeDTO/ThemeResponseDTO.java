@@ -14,6 +14,7 @@ import java.util.List;
 public class ThemeResponseDTO {
 
     private Long id;
+    private String name;
     private String description;
     private List<String> philosophers;
     private List<String> works;

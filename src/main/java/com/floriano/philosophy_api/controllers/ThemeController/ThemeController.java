@@ -49,6 +49,15 @@ public class ThemeController {
         Theme updated = themeService.updateTheme(id, dto);
         ThemeResponseDTO response = ThemeMapper.toDTO(updated);
 
-        return  new ResponseEntity<>(new ApiResponse<>(true, "Tema criado com sucesso!", response), HttpStatus.OK);
+        return  new ResponseEntity<>(new ApiResponse<>(true, "Tema atualizado com sucesso!", response), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<ThemeResponseDTO>> deleteTheme(@PathVariable Long id) {
+
+        Theme deleted = themeService.deleteThemeById(id);
+        ThemeResponseDTO responseDTO = ThemeMapper.toDTO(deleted);
+
+        return  new ResponseEntity<>(new ApiResponse<>(true, "Tema com o id " + id + " deleteado com sucesso!", responseDTO), HttpStatus.OK);
     }
 }

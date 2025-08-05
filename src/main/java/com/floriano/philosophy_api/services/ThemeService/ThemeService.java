@@ -14,6 +14,7 @@ import com.floriano.philosophy_api.repositories.PhilosopherRepository.Philosophe
 import com.floriano.philosophy_api.repositories.QuoteRepository.QuoteRepository;
 import com.floriano.philosophy_api.repositories.ThemeRepository.ThemeRepository;
 import com.floriano.philosophy_api.repositories.WorkRepository.WorkRepository;
+import com.floriano.philosophy_api.services.ThemeService.utils.ThemeDeleteHelper;
 import com.floriano.philosophy_api.services.ThemeService.utils.ThemeUpdateHelper;
 import org.springframework.stereotype.Service;
 
@@ -62,7 +63,14 @@ public class ThemeService {
         return themeRepository.save(existing);
     }
 
-   /* public Theme deleteTheme(Long id) {
+   public Theme deleteThemeById(Long id) {
+       Theme theme = themeRepository.findById(id)
+               .orElseThrow(() -> new ThemeIdNotFoundException("Theme not found"));
 
-    } */
+       ThemeDeleteHelper.detachAllRelationships(theme);
+       themeRepository.save(theme);
+       themeRepository.delete(theme);
+
+       return theme;
+    }
 }

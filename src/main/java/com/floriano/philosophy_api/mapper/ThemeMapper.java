@@ -15,9 +15,19 @@ public class ThemeMapper {
         Theme theme = new Theme();
         theme.setName(dto.getName());
         theme.setDescription(dto.getDescription());
-        theme.setPhilosophers(philosophers);
-        theme.setWorks(works);
-        theme.setQuotes(quotes);
+
+        for (Philosopher philosopher : philosophers) {
+            theme.addPhilosopher(philosopher);
+        }
+
+        for (Work work : works) {
+            theme.addWork(work);
+        }
+
+        for (Quote quote : quotes) {
+            theme.addQuote(quote);
+        }
+
         return theme;
     }
 
@@ -39,6 +49,7 @@ public class ThemeMapper {
 
         return new ThemeResponseDTO(
                 theme.getId(),
+                theme.getName(),
                 theme.getDescription(),
                 philosopherNames.isEmpty() ? null  : philosopherNames,
                 workTitles.isEmpty() ? null :  workTitles,
