@@ -6,6 +6,7 @@ import com.floriano.philosophy_api.model.Work.Work;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Table(name = "quotes")
@@ -36,5 +37,26 @@ public class Quote {
             joinColumns = @JoinColumn(name = "quote_id"),
             inverseJoinColumns = @JoinColumn(name = "theme_id")
     )
-    private List<Theme> themes;
+    private List<Theme> themes = new ArrayList<>();
+
+    // BIDIRECTIONALITY BETWEEN QUOTE AND THEMES
+    public void addTheme(Theme theme) {
+        if (!themes.contains(theme)) {
+            themes.add(theme);
+            theme.getQuotes().add(this);
+        }
+    }
+
+    public void removeTheme(Theme theme) {
+        if (themes.contains(theme)) {
+            themes.remove(theme);
+            theme.getQuotes().remove(this);
+        }
+    }
+
+    public void clearThemes() {
+        for (Theme t : List.copyOf(themes)) {
+            removeTheme(t);
+        }
+    }
 }

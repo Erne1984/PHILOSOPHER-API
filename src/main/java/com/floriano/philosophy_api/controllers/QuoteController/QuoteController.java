@@ -38,4 +38,14 @@ public class QuoteController {
 
         return new ResponseEntity<>(new ApiResponse<>(true, "Citação criada com sucesso", responseDTO), HttpStatus.CREATED);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<QuoteResponseDTO>> updateQuote(@PathVariable Long id, @RequestBody QuoteRequestDTO dto) {
+
+        Quote updated = quoteService.updateQuote(id, dto);
+
+        QuoteResponseDTO response = QuoteMapper.toDTO(updated);
+
+        return  new ResponseEntity<>(new ApiResponse<>(true, "Citação atualizado com sucesso!", response), HttpStatus.OK);
+    }
 }
