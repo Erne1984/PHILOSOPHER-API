@@ -18,7 +18,7 @@ public class WorkRequestDTO {
     @NotBlank(message = "Titúlo é obrigatório")
     private String title;
 
-    private int year;
+    private Integer year;
 
     @Size(max = 5000, message = "Sumário muito longo")
     private String summary;

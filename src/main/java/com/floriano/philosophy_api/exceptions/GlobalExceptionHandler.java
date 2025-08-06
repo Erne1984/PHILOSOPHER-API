@@ -33,4 +33,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Object>> handlePhilosopherIdNotFound(PhilosopherAlreadyExistsException ex) {
         return new ResponseEntity<>(new ApiResponse<>(false, ex.getMessage(), null), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(CountryNotFoundException.class)
+    public ResponseEntity<ApiResponse<Object>> handleCountryNotFound(CountryNotFoundException ex) {
+        return new ResponseEntity<>(new ApiResponse<>(false, ex.getMessage(), null), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(SchoolOfThoghtNotFoundException.class)
+    public ResponseEntity<ApiResponse<Object>> handleSchoolOfThoughtNotFound(SchoolOfThoghtNotFoundException ex) {
+        return new ResponseEntity<>(new ApiResponse<>(false, ex.getMessage(), null), HttpStatus.BAD_REQUEST);
+    }
 }
