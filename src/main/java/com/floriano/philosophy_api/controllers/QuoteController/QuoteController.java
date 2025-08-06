@@ -6,6 +6,7 @@ import com.floriano.philosophy_api.mapper.QuoteMapper;
 import com.floriano.philosophy_api.model.Quote.Quote;
 import com.floriano.philosophy_api.payload.ApiResponse;
 import com.floriano.philosophy_api.services.QuoteService.QuoteService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +23,7 @@ public class QuoteController {
         this.quoteService = quoteService;
     }
 
+    @Operation(summary = "Search all quotes", description = "Returns a list of all registered citations.")
     @GetMapping
     public ResponseEntity<ApiResponse<List<QuoteResponseDTO>>> getQuotes() {
         List<QuoteResponseDTO> dtoList = quoteService.getAllQuotes();
@@ -47,5 +49,12 @@ public class QuoteController {
         QuoteResponseDTO response = QuoteMapper.toDTO(updated);
 
         return  new ResponseEntity<>(new ApiResponse<>(true, "Citação atualizado com sucesso!", response), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<String>> deleteQuote(@PathVariable Long id){
+        quoteService.deleteQuote(id);
+        return new ResponseEntity<>(new ApiResponse<>(true, "Quote with id " + id + " successfully deleted!", null), HttpStatus.OK
+        );
     }
 }

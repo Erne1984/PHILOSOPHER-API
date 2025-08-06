@@ -63,14 +63,14 @@ public class ThemeService {
         return themeRepository.save(existing);
     }
 
-   public Theme deleteThemeById(Long id) {
-       Theme theme = themeRepository.findById(id)
-               .orElseThrow(() -> new ThemeIdNotFoundException("Theme not found"));
+    public Theme deleteThemeById(Long id) {
+        Theme theme = themeRepository.findById(id)
+                .orElseThrow(() -> new ThemeIdNotFoundException("Theme not found"));
 
-       ThemeDeleteHelper.detachAllRelationships(theme);
-       themeRepository.save(theme);
-       themeRepository.delete(theme);
+        ThemeDeleteHelper.detachAllRelationships(theme);
+        themeRepository.save(theme);
+        themeRepository.delete(theme);
 
-       return theme;
+        return theme;
     }
 }

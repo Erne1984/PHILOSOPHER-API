@@ -2,6 +2,7 @@ package com.floriano.philosophy_api.services.QuoteService;
 
 import com.floriano.philosophy_api.dto.QuoteDTO.QuoteRequestDTO;
 import com.floriano.philosophy_api.dto.QuoteDTO.QuoteResponseDTO;
+import com.floriano.philosophy_api.exceptions.QuoteIdNotFoundException;
 import com.floriano.philosophy_api.mapper.QuoteMapper;
 import com.floriano.philosophy_api.model.Philosopher.Philosopher;
 import com.floriano.philosophy_api.model.Quote.Quote;
@@ -11,6 +12,7 @@ import com.floriano.philosophy_api.repositories.PhilosopherRepository.Philosophe
 import com.floriano.philosophy_api.repositories.QuoteRepository.QuoteRepository;
 import com.floriano.philosophy_api.repositories.ThemeRepository.ThemeRepository;
 import com.floriano.philosophy_api.repositories.WorkRepository.WorkRepository;
+import com.floriano.philosophy_api.services.QuoteService.utils.QuoteDeleteHelper;
 import com.floriano.philosophy_api.services.QuoteService.utils.QuoteUpdateHelper;
 import org.springframework.stereotype.Service;
 
@@ -41,14 +43,16 @@ public class QuoteService {
         return quoteResponseDTOList;
     }
 
-
     public Quote createQuote(QuoteRequestDTO dto) {
 
         Philosopher philosopher = philosopherRepository.findById(dto.getPhilosopherId())
                 .orElseThrow(() -> new IllegalArgumentException("Filósofo não encontrado"));
 
-        Work work = workRepository.findById(dto.getWorkId())
-                .orElseThrow(() -> new IllegalArgumentException("Obra não encontrada"));
+        Work work = null;
+        if (dto.getWorkId() != null) {
+            work = workRepository.findById(dto.getWorkId())
+                    .orElseThrow(() -> new IllegalArgumentException("Obra não encontrada"));
+        }
 
         List<Theme> themes = themeRepository.findAllById(dto.getThemesId());
 
@@ -71,5 +75,14 @@ public class QuoteService {
         QuoteUpdateHelper.updateThemes(existing, dto.getThemesId(), themeRepository);
 
         return quoteRepository.save(existing);
+    }
+
+    public void deleteQuote(Long id) {
+        Quote quote = quoteRepository.findById(id)
+                .orElseThrow(() -> new QuoteIdNotFoundException("Quote not found"));
+
+        QuoteDeleteHelper.detachAllRelationships(quote);
+        quoteRepository.save(quote);
+        quoteRepository.delete(quote);
     }
 }
