@@ -12,6 +12,7 @@ import com.floriano.philosophy_api.repositories.PhilosopherRepository.Philosophe
 import com.floriano.philosophy_api.repositories.SchoolOfThoughtRepository.SchoolOfThoughtRepository;
 import com.floriano.philosophy_api.repositories.ThemeRepository.ThemeRepository;
 import com.floriano.philosophy_api.repositories.WorkRepository.WorkRepository;
+import com.floriano.philosophy_api.services.WorkService.utils.WorkDeleteHelper;
 import com.floriano.philosophy_api.services.WorkService.utils.WorkUpdateHelper;
 import org.springframework.stereotype.Service;
 
@@ -67,5 +68,16 @@ public class WorkService {
         WorkUpdateHelper.updateThemes(work, dto.getThemeIds(), themeRepository);
 
         return workRepository.save(work);
+    }
+
+    public Work deleteWork(Long id) {
+        Work work = workRepository.findById(id)
+                .orElseThrow(() -> new WorkIdNotFoundException("Work not found"));
+
+        WorkDeleteHelper.detachAllRelationShips(work);
+        workRepository.save(work);
+        workRepository.delete(work);
+
+        return work;
     }
 }

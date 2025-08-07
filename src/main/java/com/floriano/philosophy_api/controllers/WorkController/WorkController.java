@@ -51,4 +51,13 @@ public class WorkController {
 
         return  new ResponseEntity<>(new ApiResponse<>(true, "Work updated successfully!!", responseDTO), HttpStatus.OK);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<WorkResponseDTO>> deleteWork(@PathVariable Long id) {
+
+        Work deleted = workService.deleteWork(id);
+        WorkResponseDTO responseDTO = WorkMapper.toDTO(deleted);
+
+        return  new ResponseEntity<>(new ApiResponse<>(true, "Work with id " + id + " delete successfully!", responseDTO), HttpStatus.OK);
+    }
 }
