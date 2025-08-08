@@ -54,7 +54,6 @@ public class QuoteController {
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<String>> deleteQuote(@PathVariable Long id){
         quoteService.deleteQuote(id);
-        return new ResponseEntity<>(new ApiResponse<>(true, "Quote with id " + id + " successfully deleted!", null), HttpStatus.OK
-        );
+        return new ResponseEntity<>(new ApiResponse<>(true, "Quote with id " + id + " successfully deleted!", null), HttpStatus.OK);
     }
 }

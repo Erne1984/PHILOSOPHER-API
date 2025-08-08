@@ -9,10 +9,9 @@ import com.floriano.philosophy_api.payload.ApiResponse;
 import com.floriano.philosophy_api.services.SchoolOfThoughtService.SchoolOfThoughtService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("schools")
@@ -24,13 +23,37 @@ public class SchoolOfThoughtController {
         this.schoolOfThoughtService = schoolOfThoughtService;
     }
 
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<SchoolOfThoughtResponseDTO>>> getSchoolOfThought() {
+        List<SchoolOfThoughtResponseDTO> dtoList = schoolOfThoughtService.getSchoolOfThoughts();
+
+        return ResponseEntity.ok(new ApiResponse<>(true, "Schools List", dtoList));
+    }
+
     @PostMapping
     public ResponseEntity<ApiResponse<SchoolOfThoughtResponseDTO>> createSchoolOfThought(@RequestBody SchoolOfThoughtRequestDTO dto) {
-
         SchoolOfThought created = schoolOfThoughtService.createSchoolOfThought(dto);
 
         SchoolOfThoughtResponseDTO responseDTO = SchoolOfThoughtMapper.toDTO(created);
 
         return new ResponseEntity<>(new ApiResponse<>(true, "Escola filosófica criada com sucesso", responseDTO), HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<SchoolOfThoughtResponseDTO>> updateSchoolOfThought(@PathVariable Long id, @RequestBody SchoolOfThoughtRequestDTO dto) {
+        SchoolOfThought schoolOfThought = schoolOfThoughtService.updateSchoolOfThought(id, dto);
+
+        SchoolOfThoughtResponseDTO response = SchoolOfThoughtMapper.toDTO(schoolOfThought);
+
+        return  new ResponseEntity<>(new ApiResponse<>(true, "School of thought updated successfully!", response), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<SchoolOfThoughtResponseDTO>> deleteSchoolOfThought(@PathVariable Long id) {
+        SchoolOfThought schoolOfThought = schoolOfThoughtService.deleteSchoolOfThought(id);
+
+        SchoolOfThoughtResponseDTO responseDTO = SchoolOfThoughtMapper.toDTO(schoolOfThought);
+
+        return new ResponseEntity<>(new ApiResponse<>(true, "SchoolOfThought with id " + id + " successfully deleted!", responseDTO), HttpStatus.OK);
     }
 }

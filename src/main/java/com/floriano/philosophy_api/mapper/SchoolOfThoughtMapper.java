@@ -2,23 +2,33 @@ package com.floriano.philosophy_api.mapper;
 
 import com.floriano.philosophy_api.dto.SchoolOfThoughtDTO.SchoolOfThoughtRequestDTO;
 import com.floriano.philosophy_api.dto.SchoolOfThoughtDTO.SchoolOfThoughtResponseDTO;
+import com.floriano.philosophy_api.model.Philosopher.Philosopher;
+import com.floriano.philosophy_api.model.Quote.Quote;
 import com.floriano.philosophy_api.model.SchoolOfThought.SchoolOfThought;
+import com.floriano.philosophy_api.model.Work.Work;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class SchoolOfThoughtMapper {
 
-    public static SchoolOfThought toEntity(SchoolOfThoughtRequestDTO dto) {
+    public static SchoolOfThought toEntity(SchoolOfThoughtRequestDTO dto, List<Work> works, List<Philosopher> philosophers) {
         SchoolOfThought schoolOfThought = new SchoolOfThought();
 
         schoolOfThought.setName(dto.getName());
         schoolOfThought.setDescription(dto.getDescription());
         schoolOfThought.setOriginCentury(dto.getOriginCentury());
 
-        // IMPLEMENTAR POSTERIORMENTE
+        for (Philosopher philosopher : philosophers) {
+            schoolOfThought.addPhilosopher(philosopher);
+        }
 
-        schoolOfThought.setWorks(null);
-        schoolOfThought.setPhilosophers(null);
+        for (Work work : works) {
+            schoolOfThought.addWork(work);
+        }
+
+        schoolOfThought.setWorks(works);
+        schoolOfThought.setPhilosophers(philosophers);
 
         return schoolOfThought;
     }
