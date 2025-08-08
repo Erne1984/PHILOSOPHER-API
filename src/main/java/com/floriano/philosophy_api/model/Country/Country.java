@@ -22,8 +22,8 @@ public class Country {
 
     private String name;
     private String isoCode;
-    private int startYear;
-    private int endYear;
+    private Integer startYear;
+    private Integer endYear;
     private String region;
 
     @OneToMany(mappedBy = "country")
