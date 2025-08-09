@@ -29,9 +29,9 @@ public class PhilosopherMapper {
                 philosopher.getBirthYear(),
                 philosopher.getDeathYear(),
                 philosopher.getBio(),
-                philosopher.getCountry().getName(),
+                philosopher.getCountry() != null ? philosopher.getCountry().getName() : null,
                 philosopher.getQuotes() != null
-                        ? philosopher.getQuotes().stream().map(quote -> quote.getContent()).collect(Collectors.toList())
+                        ? philosopher.getQuotes().stream().map(quote -> quote.getContent()).toList()
                         : List.of()
         );
     }

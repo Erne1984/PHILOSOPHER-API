@@ -60,4 +60,23 @@ public class PhilosopherController {
         return new ResponseEntity<>(new ApiResponse<>(true, "Filósofo criado com sucesso", responseDto), HttpStatus.CREATED);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<PhilosopherResponseDTO>> updatePhilosopher(@PathVariable Long id, @RequestBody PhilosopherRequestDTO dto) {
+
+        Philosopher updated = philosopherService.updatePhilosopher(id, dto);
+        PhilosopherResponseDTO responseDTO = PhilosopherMapper.toDTO(updated);
+
+
+        return  new ResponseEntity<>(new ApiResponse<>(true, "Philosopher updated successfully!!", responseDTO), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<PhilosopherResponseDTO>> deletePhilosopher(@PathVariable Long id) {
+
+        Philosopher deleted = philosopherService.deletePhilosopher(id);
+        PhilosopherResponseDTO responseDTO = PhilosopherMapper.toDTO(deleted);
+
+
+        return  new ResponseEntity<>(new ApiResponse<>(true, "Philosopher deleted successfully!!", responseDTO), HttpStatus.OK);
+    }
 }

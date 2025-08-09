@@ -31,4 +31,7 @@ public class PhilosopherRequestDTO {
     private Long countryId;
 
     private List<Long> quotesId;
+
+    private List<Long> schoolOfThoughtsIds;
+    private List<Long> themesIds;
 }
