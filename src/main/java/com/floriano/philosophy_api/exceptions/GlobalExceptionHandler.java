@@ -43,4 +43,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Object>> handleSchoolOfThoughtNotFound(SchoolOfThoghtNotFoundException ex) {
         return new ResponseEntity<>(new ApiResponse<>(false, ex.getMessage(), null), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(InfluenceNotFoundException.class)
+    public ResponseEntity<ApiResponse<Object>> handleInfluenceNotFound(InfluenceNotFoundException ex) {
+        return new ResponseEntity<>(new ApiResponse<>(false, ex.getMessage(), null), HttpStatus.BAD_REQUEST);
+    }
 }

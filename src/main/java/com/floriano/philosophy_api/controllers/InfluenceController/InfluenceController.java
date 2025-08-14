@@ -8,12 +8,11 @@ import com.floriano.philosophy_api.payload.ApiResponse;
 import com.floriano.philosophy_api.services.InfluenceService.InfluenceService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
+import java.util.List;
+
+@RestController
 @RequestMapping("influences")
 public class InfluenceController {
 
@@ -21,6 +20,19 @@ public class InfluenceController {
 
     public InfluenceController(InfluenceService influenceService) {
         this.influenceService = influenceService;
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<InfluenceResponseDTO>>> getInfluences() {
+
+        List<Influence> influences = influenceService.getInfluences();
+
+        List<InfluenceResponseDTO> influenceResponseDTOS = influences
+                .stream()
+                .map(InfluenceMapper::toDTO)
+                .toList();
+
+        return ResponseEntity.ok(new ApiResponse<>(true, "influences List", influenceResponseDTOS));
     }
 
     @PostMapping
@@ -32,4 +44,23 @@ public class InfluenceController {
 
         return new ResponseEntity<>(new ApiResponse<>(true, "Influência criada com sucesso", response), HttpStatus.CREATED);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<InfluenceResponseDTO>> updateInfluence(@PathVariable Long id, @RequestBody InfluenceRequestDTO dto) {
+
+        Influence updated = influenceService.updateInfluence(id, dto);
+
+        InfluenceResponseDTO responseDTO = InfluenceMapper.toDTO(updated);
+
+        return new ResponseEntity<>(new ApiResponse<>(true, "influence updated successfully!", responseDTO), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<String>> deleteInfluence(@PathVariable Long id) {
+
+        Influence deleted = influenceService.deleteInfluence(id);
+
+        return  new ResponseEntity<>(new ApiResponse<>(true, "Influence with " + id + " deleted successfully!", null), HttpStatus.OK);
+    }
+
 }
