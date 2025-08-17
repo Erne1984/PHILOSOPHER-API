@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("philosophers")
+@RequestMapping("/v1/philosophers")
 public class PhilosopherController {
 
     private final PhilosopherService philosopherService;

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("schools")
+@RequestMapping("/v1/schools")
 public class SchoolOfThoughtController {
 
     private final SchoolOfThoughtService schoolOfThoughtService;

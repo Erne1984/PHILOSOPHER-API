@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("quotes")
+@RequestMapping("/v1/quotes")
 public class QuoteController {
 
     private final QuoteService quoteService;

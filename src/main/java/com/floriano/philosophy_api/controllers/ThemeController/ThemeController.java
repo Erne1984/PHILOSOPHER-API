@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("themes")
+@RequestMapping("/v1/themes")
 public class ThemeController {
 
     private final ThemeService themeService;
