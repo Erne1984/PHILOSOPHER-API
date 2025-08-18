@@ -1,6 +1,8 @@
 package com.floriano.philosophy_api.services.PhilosopherService;
 
+import com.floriano.philosophy_api.dto.InfluenceDTO.InfluenceResponseDTO;
 import com.floriano.philosophy_api.dto.PhilosopherDTO.PhilosopherRequestDTO;
+import com.floriano.philosophy_api.dto.PhilosopherDTO.PhilosopherResponseDTO;
 import com.floriano.philosophy_api.dto.QuoteDTO.QuoteResponseDTO;
 import com.floriano.philosophy_api.dto.WorkDTO.WorkResponseDTO;
 import com.floriano.philosophy_api.exceptions.PhilosopherAlreadyExistsException;
@@ -9,6 +11,7 @@ import com.floriano.philosophy_api.mapper.PhilosopherMapper;
 import com.floriano.philosophy_api.mapper.QuoteMapper;
 import com.floriano.philosophy_api.mapper.WorkMapper;
 import com.floriano.philosophy_api.model.Country.Country;
+import com.floriano.philosophy_api.model.Influence.Influence;
 import com.floriano.philosophy_api.model.Philosopher.Philosopher;
 import com.floriano.philosophy_api.model.Quote.Quote;
 import com.floriano.philosophy_api.model.Work.Work;
@@ -84,6 +87,35 @@ public class PhilosopherService {
 
         return  workResponseDTOS;
     }
+
+    public List<InfluenceResponseDTO> getInfluencedByPhilosopher(Long id) {
+        Philosopher philosopher = philosopherRepository.findById(id)
+                .orElseThrow(() -> new PhilosopherIdNotFoundException("Philosopher with ID " + id + " not found"));
+
+        return philosopher.getInfluenced().stream()
+                .map(influence -> new InfluenceResponseDTO(
+                        influence.getId(),
+                        philosopher.getName(), // influencer
+                        influence.getInfluenced().getName(), // influenced
+                        influence.getStrength().name()
+                ))
+                .toList();
+    }
+
+    public List<InfluenceResponseDTO> getInfluencersOfPhilosopher(Long id) {
+        Philosopher philosopher = philosopherRepository.findById(id)
+                .orElseThrow(() -> new PhilosopherIdNotFoundException("Philosopher with ID " + id + " not found"));
+
+        return philosopher.getInfluencedBy().stream()
+                .map(influence -> new InfluenceResponseDTO(
+                        influence.getId(),
+                        influence.getInfluencer().getName(), // influencer
+                        philosopher.getName(), // influenced
+                        influence.getStrength().name()
+                ))
+                .toList();
+    }
+
 
     public Philosopher createPhilosopher(PhilosopherRequestDTO dto) {
 

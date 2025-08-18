@@ -1,5 +1,6 @@
 package com.floriano.philosophy_api.controllers.PhilosopherController;
 
+import com.floriano.philosophy_api.dto.InfluenceDTO.InfluenceResponseDTO;
 import com.floriano.philosophy_api.dto.PhilosopherDTO.PhilosopherRequestDTO;
 import com.floriano.philosophy_api.dto.PhilosopherDTO.PhilosopherResponseDTO;
 import com.floriano.philosophy_api.dto.QuoteDTO.QuoteResponseDTO;
@@ -61,6 +62,18 @@ public class PhilosopherController {
             return new ResponseEntity<>(new ApiResponse<>(true, "No works from this philosopher", List.of()), HttpStatus.OK);
         }
         return new ResponseEntity<>(new ApiResponse<>(true, "Works of " + workResponseDTOS.get(0).getPhilosopherName() + " found", workResponseDTOS), HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}/influenced")
+    public ResponseEntity<ApiResponse<List<InfluenceResponseDTO>>> getInfluenced(@PathVariable Long id) {
+        List<InfluenceResponseDTO> list = philosopherService.getInfluencedByPhilosopher(id);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Influenced philosophers found", list));
+    }
+
+    @GetMapping("/{id}/influencers")
+    public ResponseEntity<ApiResponse<List<InfluenceResponseDTO>>> getInfluencers(@PathVariable Long id) {
+        List<InfluenceResponseDTO> list = philosopherService.getInfluencersOfPhilosopher(id);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Influencers found", list));
     }
 
     @PostMapping
