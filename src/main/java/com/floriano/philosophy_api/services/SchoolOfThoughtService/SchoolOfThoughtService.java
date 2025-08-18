@@ -33,12 +33,17 @@ public class SchoolOfThoughtService {
 
         List<SchoolOfThought> schoolOfThoughts = schoolOfThoughtRepository.findAll();
 
-        List<SchoolOfThoughtResponseDTO> schoolOfThoughtResponseDTOList = schoolOfThoughts
+        return schoolOfThoughts
                 .stream()
                 .map(SchoolOfThoughtMapper::toDTO)
                 .toList();
+    }
 
-        return schoolOfThoughtResponseDTOList;
+    public SchoolOfThoughtResponseDTO getSchoolOfThought(Long id) {
+        SchoolOfThought schoolOfThought = schoolOfThoughtRepository.findById(id)
+                .orElseThrow(() -> new SchoolOfThoghtNotFoundException("School not found"));
+
+        return SchoolOfThoughtMapper.toDTO(schoolOfThought);
     }
 
     public SchoolOfThought createSchoolOfThought(SchoolOfThoughtRequestDTO  dto) {

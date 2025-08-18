@@ -1,6 +1,7 @@
 package com.floriano.philosophy_api.services.InfluenceService;
 
 import com.floriano.philosophy_api.dto.InfluenceDTO.InfluenceRequestDTO;
+import com.floriano.philosophy_api.dto.InfluenceDTO.InfluenceResponseDTO;
 import com.floriano.philosophy_api.exceptions.InfluenceNotFoundException;
 import com.floriano.philosophy_api.mapper.InfluenceMapper;
 import com.floriano.philosophy_api.model.Influence.Influence;
@@ -24,9 +25,21 @@ public class InfluenceService {
         this.philosopherRepository = philosopherRepository;
     }
 
-    public List<Influence> getInfluences() {
+    public List<InfluenceResponseDTO> getInfluences() {
 
-        return influenceRepository.findAll();
+        List<Influence> influences = influenceRepository.findAll();
+
+        return influences
+                .stream()
+                .map(InfluenceMapper::toDTO)
+                .toList();
+    }
+
+    public InfluenceResponseDTO getInfluenceById(Long id) {
+        Influence influence = influenceRepository.findById(id)
+                .orElseThrow(() -> new InfluenceNotFoundException("Influence not found"));
+
+        return InfluenceMapper.toDTO(influence);
     }
 
     public Influence createInfluence(InfluenceRequestDTO dto) {

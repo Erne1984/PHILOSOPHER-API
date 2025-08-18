@@ -1,10 +1,8 @@
 package com.floriano.philosophy_api.services.ThemeService;
 
 import com.floriano.philosophy_api.dto.ThemeDTO.ThemeRequestDTO;
-import com.floriano.philosophy_api.exceptions.PhilosopherIdNotFoundException;
-import com.floriano.philosophy_api.exceptions.QuoteIdNotFoundException;
+import com.floriano.philosophy_api.dto.ThemeDTO.ThemeResponseDTO;
 import com.floriano.philosophy_api.exceptions.ThemeIdNotFoundException;
-import com.floriano.philosophy_api.exceptions.WorkIdNotFoundException;
 import com.floriano.philosophy_api.mapper.ThemeMapper;
 import com.floriano.philosophy_api.model.Philosopher.Philosopher;
 import com.floriano.philosophy_api.model.Quote.Quote;
@@ -36,8 +34,19 @@ public class ThemeService {
         this.quoteRepository = quoteRepository;
     }
 
-    public List<Theme> getAllThemes() {
-        return themeRepository.findAll();
+    public List<ThemeResponseDTO> getAllThemes() {
+        List<Theme> themes = themeRepository.findAll();
+
+        return themes.stream()
+                .map(ThemeMapper::toDTO)
+                .toList();
+    }
+
+    public ThemeResponseDTO getThemeById(Long id) {
+        Theme theme = themeRepository.findById(id)
+                .orElseThrow(() -> new ThemeIdNotFoundException("Theme not found"));
+
+        return ThemeMapper.toDTO(theme);
     }
 
     public Theme createTheme(ThemeRequestDTO dto) {
@@ -56,9 +65,18 @@ public class ThemeService {
                 .orElseThrow(() -> new ThemeIdNotFoundException("Theme not found"));
 
         ThemeUpdateHelper.updateBasicFields(existing, dto);
-        ThemeUpdateHelper.updatePhilosophers(existing, dto.getPhilosophersIds(), philosopherRepository);
-        ThemeUpdateHelper.updateWorks(existing, dto.getWorksIds(), workRepository);
-        ThemeUpdateHelper.updateQuotes(existing, dto.getQuotesIds(), quoteRepository);
+
+        if (dto.getPhilosophersIds() != null && !dto.getPhilosophersIds().isEmpty()) {
+            ThemeUpdateHelper.updatePhilosophers(existing, dto.getPhilosophersIds(), philosopherRepository);
+        }
+
+        if (dto.getWorksIds() != null && !dto.getWorksIds().isEmpty()) {
+            ThemeUpdateHelper.updateWorks(existing, dto.getWorksIds(), workRepository);
+        }
+
+        if (dto.getQuotesIds() != null && !dto.getQuotesIds().isEmpty()) {
+            ThemeUpdateHelper.updateQuotes(existing, dto.getQuotesIds(), quoteRepository);
+        }
 
         return themeRepository.save(existing);
     }
