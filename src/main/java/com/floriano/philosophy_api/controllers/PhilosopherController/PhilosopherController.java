@@ -9,6 +9,7 @@ import com.floriano.philosophy_api.mapper.PhilosopherMapper;
 import com.floriano.philosophy_api.model.Philosopher.Philosopher;
 import com.floriano.philosophy_api.payload.ApiResponse;
 import com.floriano.philosophy_api.services.PhilosopherService.PhilosopherService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +26,7 @@ public class PhilosopherController {
         this.philosopherService = philosopherService;
     }
 
+    @Operation(summary = "Listar todos os filósofos", description = "Retorna a lista completa de filósofos cadastrados")
     @GetMapping
     public ResponseEntity<ApiResponse<List<PhilosopherResponseDTO>>> getPhilosophers() {
         List<Philosopher> list = philosopherService.getAllPhilosophers();
@@ -35,6 +37,7 @@ public class PhilosopherController {
         return ResponseEntity.ok(new ApiResponse<>(true, "Lista de filósofos", dtoList));
     }
 
+    @Operation(summary = "Buscar filósofo por ID", description = "Retorna as informações detalhadas de um filósofo pelo seu ID")
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<PhilosopherResponseDTO>> getPhilosopherById(@PathVariable Long id) {
         Philosopher philosopher = philosopherService.getPhilosopherById(id);
@@ -42,9 +45,9 @@ public class PhilosopherController {
         return ResponseEntity.ok(new ApiResponse<>(true, "Filósofo encontrado", dto));
     }
 
+    @Operation(summary = "Listar citações de um filósofo", description = "Retorna todas as citações atribuídas a um filósofo específico")
     @GetMapping("/{id}/quotes")
     public ResponseEntity<ApiResponse<List<QuoteResponseDTO>>> getQuotesByPhilosopher(@PathVariable Long id) {
-
         List<QuoteResponseDTO> responseDTOS = philosopherService.getQuotesByPhilosopher(id);
 
         if (responseDTOS.isEmpty()) {
@@ -53,9 +56,9 @@ public class PhilosopherController {
         return new ResponseEntity<>(new ApiResponse<>(true, "Quotes of " + responseDTOS.get(0).getPhilosopherName() +  " found", responseDTOS), HttpStatus.OK);
     }
 
+    @Operation(summary = "Listar obras de um filósofo", description = "Retorna todas as obras escritas por um filósofo específico")
     @GetMapping("/{id}/works")
     public ResponseEntity<ApiResponse<List<WorkResponseDTO>>> getWorksByPhilosopher(@PathVariable Long id) {
-
         List<WorkResponseDTO> workResponseDTOS = philosopherService.getWorksByPhilosopher(id);
 
         if ( workResponseDTOS.isEmpty()) {
@@ -64,18 +67,21 @@ public class PhilosopherController {
         return new ResponseEntity<>(new ApiResponse<>(true, "Works of " + workResponseDTOS.get(0).getPhilosopherName() + " found", workResponseDTOS), HttpStatus.OK);
     }
 
+    @Operation(summary = "Listar filósofos influenciados", description = "Retorna todos os filósofos que foram influenciados por um filósofo específico")
     @GetMapping("/{id}/influenced")
     public ResponseEntity<ApiResponse<List<InfluenceResponseDTO>>> getInfluenced(@PathVariable Long id) {
         List<InfluenceResponseDTO> list = philosopherService.getInfluencedByPhilosopher(id);
         return ResponseEntity.ok(new ApiResponse<>(true, "Influenced philosophers found", list));
     }
 
+    @Operation(summary = "Listar influenciadores de um filósofo", description = "Retorna todos os filósofos que influenciaram um filósofo específico")
     @GetMapping("/{id}/influencers")
     public ResponseEntity<ApiResponse<List<InfluenceResponseDTO>>> getInfluencers(@PathVariable Long id) {
         List<InfluenceResponseDTO> list = philosopherService.getInfluencersOfPhilosopher(id);
         return ResponseEntity.ok(new ApiResponse<>(true, "Influencers found", list));
     }
 
+    @Operation(summary = "Criar filósofo", description = "Adiciona um novo filósofo ao sistema")
     @PostMapping
     public ResponseEntity<ApiResponse<PhilosopherResponseDTO>> createPhilosopher(
             @RequestBody PhilosopherRequestDTO dto) {
@@ -85,23 +91,19 @@ public class PhilosopherController {
         return new ResponseEntity<>(new ApiResponse<>(true, "Filósofo criado com sucesso", responseDto), HttpStatus.CREATED);
     }
 
+    @Operation(summary = "Atualizar filósofo", description = "Atualiza as informações de um filósofo existente pelo seu ID")
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<PhilosopherResponseDTO>> updatePhilosopher(@PathVariable Long id, @RequestBody PhilosopherRequestDTO dto) {
-
         Philosopher updated = philosopherService.updatePhilosopher(id, dto);
         PhilosopherResponseDTO responseDTO = PhilosopherMapper.toDTO(updated);
-
-
         return  new ResponseEntity<>(new ApiResponse<>(true, "Philosopher updated successfully!!", responseDTO), HttpStatus.OK);
     }
 
+    @Operation(summary = "Deletar filósofo", description = "Remove um filósofo do sistema pelo seu ID")
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<PhilosopherResponseDTO>> deletePhilosopher(@PathVariable Long id) {
-
         Philosopher deleted = philosopherService.deletePhilosopher(id);
         PhilosopherResponseDTO responseDTO = PhilosopherMapper.toDTO(deleted);
-
-
         return  new ResponseEntity<>(new ApiResponse<>(true, "Philosopher deleted successfully!!", responseDTO), HttpStatus.OK);
     }
 }

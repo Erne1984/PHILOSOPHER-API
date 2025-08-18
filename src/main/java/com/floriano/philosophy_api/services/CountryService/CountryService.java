@@ -1,9 +1,14 @@
 package com.floriano.philosophy_api.services.CountryService;
 
 import com.floriano.philosophy_api.dto.CountryDTO.CountryRequestDTO;
+import com.floriano.philosophy_api.dto.CountryDTO.CountryResponseDTO;
+import com.floriano.philosophy_api.dto.PhilosopherDTO.PhilosopherResponseDTO;
+import com.floriano.philosophy_api.dto.WorkDTO.WorkResponseDTO;
 import com.floriano.philosophy_api.exceptions.CountryNotFoundException;
 import com.floriano.philosophy_api.exceptions.WorkIdNotFoundException;
 import com.floriano.philosophy_api.mapper.CountryMapper;
+import com.floriano.philosophy_api.mapper.PhilosopherMapper;
+import com.floriano.philosophy_api.mapper.WorkMapper;
 import com.floriano.philosophy_api.model.Country.Country;
 import com.floriano.philosophy_api.model.Philosopher.Philosopher;
 import com.floriano.philosophy_api.model.Work.Work;
@@ -29,8 +34,42 @@ public class CountryService {
         this.workRepository = workRepository;
     }
 
-    public List<Country> getCountry() {
-        return countryRepository.findAll();
+    public List<CountryResponseDTO> getCountries() {
+
+        List<Country> countryList = countryRepository.findAll();
+
+        return countryList.stream()
+                .map(CountryMapper::toDTO)
+                .toList();
+    }
+
+    public CountryResponseDTO getCountryById(Long id) {
+        Country country = countryRepository.findById(id)
+                .orElseThrow(() -> new CountryNotFoundException("Country not Found"));
+
+        return CountryMapper.toDTO(country);
+    }
+
+    public List<PhilosopherResponseDTO> getPhilosophersByCountry(Long id) {
+        Country country = countryRepository.findById(id)
+                .orElseThrow(() -> new CountryNotFoundException("Country not Found"));
+
+        List<Philosopher> philosopherList = philosopherRepository.findByCountryId(country.getId());
+
+        return philosopherList.stream()
+                .map(PhilosopherMapper::toDTO)
+                .toList();
+    }
+
+    public List<WorkResponseDTO> getWorksByCountry(Long id) {
+        Country country = countryRepository.findById(id)
+                .orElseThrow(() -> new CountryNotFoundException("Country not Found"));
+
+        List<Work> workList = workRepository.findByCountryId(country.getId());
+
+        return workList.stream()
+                .map(WorkMapper::toDTO)
+                .toList();
     }
 
     public Country createCountry(CountryRequestDTO dto) {

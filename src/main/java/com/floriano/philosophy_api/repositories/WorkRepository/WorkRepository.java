@@ -11,4 +11,5 @@ import java.util.List;
 public interface WorkRepository extends JpaRepository<Work, Long> {
 
     List<Work> findByPhilosopherId(Long id);
+    List<Work> findByCountryId(Long id);
 }
