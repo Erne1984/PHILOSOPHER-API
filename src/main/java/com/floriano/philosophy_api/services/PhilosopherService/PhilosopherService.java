@@ -2,17 +2,22 @@ package com.floriano.philosophy_api.services.PhilosopherService;
 
 import com.floriano.philosophy_api.dto.PhilosopherDTO.PhilosopherRequestDTO;
 import com.floriano.philosophy_api.dto.QuoteDTO.QuoteResponseDTO;
+import com.floriano.philosophy_api.dto.WorkDTO.WorkResponseDTO;
 import com.floriano.philosophy_api.exceptions.PhilosopherAlreadyExistsException;
 import com.floriano.philosophy_api.exceptions.PhilosopherIdNotFoundException;
 import com.floriano.philosophy_api.mapper.PhilosopherMapper;
+import com.floriano.philosophy_api.mapper.QuoteMapper;
+import com.floriano.philosophy_api.mapper.WorkMapper;
 import com.floriano.philosophy_api.model.Country.Country;
 import com.floriano.philosophy_api.model.Philosopher.Philosopher;
 import com.floriano.philosophy_api.model.Quote.Quote;
+import com.floriano.philosophy_api.model.Work.Work;
 import com.floriano.philosophy_api.repositories.CountryRepository.CountryRepository;
 import com.floriano.philosophy_api.repositories.PhilosopherRepository.PhilosopherRepository;
 import com.floriano.philosophy_api.repositories.QuoteRepository.QuoteRepository;
 import com.floriano.philosophy_api.repositories.SchoolOfThoughtRepository.SchoolOfThoughtRepository;
 import com.floriano.philosophy_api.repositories.ThemeRepository.ThemeRepository;
+import com.floriano.philosophy_api.repositories.WorkRepository.WorkRepository;
 import com.floriano.philosophy_api.services.PhilosopherService.utils.PhilosopherDeleteHelper;
 import com.floriano.philosophy_api.services.PhilosopherService.utils.PhilosopherUpdateHelper;
 import org.springframework.stereotype.Service;
@@ -27,17 +32,20 @@ public class PhilosopherService {
     private final QuoteRepository quoteRepository;
     private final SchoolOfThoughtRepository schoolOfThoughtRepository;
     private final ThemeRepository themeRepository;
+    private final WorkRepository workRepository;
 
     public PhilosopherService(PhilosopherRepository philosopherRepository,
                               CountryRepository countryRepository,
                               QuoteRepository quoteRepository,
                               SchoolOfThoughtRepository schoolOfThoughtRepository,
-                              ThemeRepository themeRepository) {
+                              ThemeRepository themeRepository,
+                              WorkRepository workRepository) {
         this.philosopherRepository = philosopherRepository;
         this.countryRepository = countryRepository;
         this.quoteRepository = quoteRepository;
         this.schoolOfThoughtRepository = schoolOfThoughtRepository;
         this.themeRepository = themeRepository;
+        this.workRepository = workRepository;
     }
 
     public List<Philosopher> getAllPhilosophers() {
@@ -57,19 +65,24 @@ public class PhilosopherService {
         List<Quote> quotes = quoteRepository.findByPhilosopherId(id);
 
         List<QuoteResponseDTO> quotesResponse = quotes.stream()
-                .map(quote -> {
-                    return new QuoteResponseDTO(
-                            quote.getId(),
-                            quote.getContent(),
-                            philosopher.getName(),
-                            quote.getWork() != null ? quote.getWork().getTitle() : null,
-                            quote.getThemes() != null
-                                    ? quote.getThemes().stream().map(theme -> theme.getName()).toList()
-                                    : List.of()
-                    );
-                }).toList();
+                .map(QuoteMapper::toDTO)
+                .toList();
 
         return quotesResponse;
+    }
+
+    public List<WorkResponseDTO> getWorksByPhilosopher(Long id) {
+
+        Philosopher philosopher = philosopherRepository.findById(id)
+                .orElseThrow(() -> new PhilosopherIdNotFoundException("Philosopher with ID " + id + " not found"));
+
+        List<Work> workList = workRepository.findByPhilosopherId(id);
+
+        List<WorkResponseDTO> workResponseDTOS = workList.stream()
+                .map(WorkMapper::toDTO)
+                .toList();
+
+        return  workResponseDTOS;
     }
 
     public Philosopher createPhilosopher(PhilosopherRequestDTO dto) {

@@ -3,6 +3,7 @@ package com.floriano.philosophy_api.controllers.PhilosopherController;
 import com.floriano.philosophy_api.dto.PhilosopherDTO.PhilosopherRequestDTO;
 import com.floriano.philosophy_api.dto.PhilosopherDTO.PhilosopherResponseDTO;
 import com.floriano.philosophy_api.dto.QuoteDTO.QuoteResponseDTO;
+import com.floriano.philosophy_api.dto.WorkDTO.WorkResponseDTO;
 import com.floriano.philosophy_api.mapper.PhilosopherMapper;
 import com.floriano.philosophy_api.model.Philosopher.Philosopher;
 import com.floriano.philosophy_api.payload.ApiResponse;
@@ -48,7 +49,18 @@ public class PhilosopherController {
         if (responseDTOS.isEmpty()) {
             return new ResponseEntity<>(new ApiResponse<>(true, "Quotes not found", List.of()), HttpStatus.OK);
         }
-        return new ResponseEntity<>(new ApiResponse<>(true, "Quotes found ", responseDTOS), HttpStatus.OK);
+        return new ResponseEntity<>(new ApiResponse<>(true, "Quotes of " + responseDTOS.get(0).getPhilosopherName() +  " found", responseDTOS), HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}/works")
+    public ResponseEntity<ApiResponse<List<WorkResponseDTO>>> getWorksByPhilosopher(@PathVariable Long id) {
+
+        List<WorkResponseDTO> workResponseDTOS = philosopherService.getWorksByPhilosopher(id);
+
+        if ( workResponseDTOS.isEmpty()) {
+            return new ResponseEntity<>(new ApiResponse<>(true, "No works from this philosopher", List.of()), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(new ApiResponse<>(true, "Works of " + workResponseDTOS.get(0).getPhilosopherName() + " found", workResponseDTOS), HttpStatus.OK);
     }
 
     @PostMapping
