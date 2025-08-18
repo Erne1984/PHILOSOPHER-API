@@ -43,6 +43,13 @@ public class QuoteService {
         return quoteResponseDTOList;
     }
 
+    public QuoteResponseDTO getQuoteById(Long id) {
+        Quote quote = quoteRepository.findById(id)
+                .orElseThrow(() -> new QuoteIdNotFoundException("Quote not found"));
+
+        return QuoteMapper.toDTO(quote);
+    }
+
     public Quote createQuote(QuoteRequestDTO dto) {
 
         Philosopher philosopher = philosopherRepository.findById(dto.getPhilosopherId())

@@ -10,4 +10,5 @@ import java.util.List;
 public interface QuoteRepository extends JpaRepository<Quote, Long> {
 
     List<Quote> findByPhilosopherId(Long philosopherId);
+    List<Quote> findByWorkId(Long workId);
 }
