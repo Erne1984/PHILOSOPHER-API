@@ -18,6 +18,4 @@ public class WorkResponseDTO {
     private String summary;
     private String philosopherName;
     private String countryName;
-    private List<String> schoolsOfThought;
-    private List<String> themes;
 }

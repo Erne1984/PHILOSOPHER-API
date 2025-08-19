@@ -31,10 +31,7 @@ public class QuoteMapper {
                 quote.getId(),
                 quote.getContent(),
                 quote.getPhilosopher().getName(),
-                quote.getWork() != null ? quote.getWork().getTitle() : null,
-                quote.getThemes() != null
-                        ? quote.getThemes().stream().map(theme -> theme.getName()).collect(Collectors.toList())
-                        : List.of()
+                quote.getWork() != null ? quote.getWork().getTitle() : null
         );
     }
 }

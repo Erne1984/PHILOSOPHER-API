@@ -1,7 +1,10 @@
 package com.floriano.philosophy_api.services.ThemeService;
 
+import com.floriano.philosophy_api.dto.PhilosopherDTO.PhilosopherResponseDTO;
+import com.floriano.philosophy_api.dto.QuoteDTO.QuoteResponseDTO;
 import com.floriano.philosophy_api.dto.ThemeDTO.ThemeRequestDTO;
 import com.floriano.philosophy_api.dto.ThemeDTO.ThemeResponseDTO;
+import com.floriano.philosophy_api.dto.WorkDTO.WorkResponseDTO;
 import com.floriano.philosophy_api.exceptions.ThemeIdNotFoundException;
 import com.floriano.philosophy_api.mapper.ThemeMapper;
 import com.floriano.philosophy_api.model.Philosopher.Philosopher;
@@ -14,6 +17,9 @@ import com.floriano.philosophy_api.repositories.ThemeRepository.ThemeRepository;
 import com.floriano.philosophy_api.repositories.WorkRepository.WorkRepository;
 import com.floriano.philosophy_api.services.ThemeService.utils.ThemeDeleteHelper;
 import com.floriano.philosophy_api.services.ThemeService.utils.ThemeUpdateHelper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,12 +40,40 @@ public class ThemeService {
         this.quoteRepository = quoteRepository;
     }
 
-    public List<ThemeResponseDTO> getAllThemes() {
-        List<Theme> themes = themeRepository.findAll();
+    public Page<ThemeResponseDTO> getAllThemes(Pageable pageable) {
+        Page<Theme> themes = themeRepository.findAll(pageable);
+        return themes.map(ThemeMapper::toDTO);
+    }
 
-        return themes.stream()
-                .map(ThemeMapper::toDTO)
+    public Page<PhilosopherResponseDTO> getPhilosophersByTheme(Long themeId, Pageable pageable) {
+        Theme theme = themeRepository.findById(themeId)
+                .orElseThrow(() -> new ThemeIdNotFoundException("Theme not found"));
+        List<PhilosopherResponseDTO> dtos = theme.getPhilosophers()
+                .stream()
+                .map(p -> new PhilosopherResponseDTO(p.getId(), p.getName(), p.getBirthYear(), p.getDeathYear(), p.getBio(), p.getCountry().getName()))
                 .toList();
+        return new PageImpl<>(dtos, pageable, dtos.size());
+    }
+
+    public Page<WorkResponseDTO> getWorksByTheme(Long themeId, Pageable pageable) {
+        Theme theme = themeRepository.findById(themeId)
+                .orElseThrow(() -> new ThemeIdNotFoundException("Theme not found"));
+        List<WorkResponseDTO> dtos = theme.getWorks()
+                .stream()
+                .map(w -> new WorkResponseDTO(w.getId(), w.getTitle(), w.getYear(), w.getSummary(), w.getPhilosopher().getName(), w.getCountry().getName()))
+                .toList();
+        return new PageImpl<>(dtos, pageable, dtos.size());
+    }
+
+    public Page<QuoteResponseDTO> getQuotesByTheme(Long themeId, Pageable pageable) {
+        Theme theme = themeRepository.findById(themeId)
+                .orElseThrow(() -> new ThemeIdNotFoundException("Theme not found"));
+        List<QuoteResponseDTO> dtos = theme.getQuotes()
+                .stream()
+                .map(q -> new QuoteResponseDTO(q.getId(), q.getContent(), q.getPhilosopher() != null ? q.getPhilosopher().getName() : null,
+                        q.getWork() != null ? q.getWork().getTitle() : "No work associated"))
+                .toList();
+        return new PageImpl<>(dtos, pageable, dtos.size());
     }
 
     public ThemeResponseDTO getThemeById(Long id) {

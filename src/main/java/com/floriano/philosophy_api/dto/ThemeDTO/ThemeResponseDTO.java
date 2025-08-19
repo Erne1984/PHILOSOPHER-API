@@ -16,7 +16,7 @@ public class ThemeResponseDTO {
     private Long id;
     private String name;
     private String description;
-    private List<String> philosophers;
+    /*private List<String> philosophers;
     private List<String> works;
-    private List<String> quotes;
+    private List<String> quotes;*/
 }

@@ -32,28 +32,14 @@ public class ThemeMapper {
     }
 
     public static ThemeResponseDTO toDTO(Theme theme) {
-        List<String> philosopherNames = theme.getPhilosophers()
-                .stream()
-                .map(Philosopher::getName)
-                .toList();
-
-        List<String> workTitles = theme.getWorks()
-                .stream()
-                .map(Work::getTitle)
-                .toList();
-
-        List<String> quoteContents = theme.getQuotes()
-                .stream()
-                .map(Quote::getContent)
-                .toList();
 
         return new ThemeResponseDTO(
                 theme.getId(),
                 theme.getName(),
-                theme.getDescription(),
-                philosopherNames.isEmpty() ? null  : philosopherNames,
+                theme.getDescription()
+                /*philosopherNames.isEmpty() ? null  : philosopherNames,
                 workTitles.isEmpty() ? null :  workTitles,
-                quoteContents.isEmpty() ? null  : quoteContents
+                quoteContents.isEmpty() ? null  : quoteContents*/
         );
     }
 }

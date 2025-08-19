@@ -18,6 +18,4 @@ public class QuoteResponseDTO {
     private String philosopherName;
 
     private String workTitle;
-
-    private List<String> themesName;
 }

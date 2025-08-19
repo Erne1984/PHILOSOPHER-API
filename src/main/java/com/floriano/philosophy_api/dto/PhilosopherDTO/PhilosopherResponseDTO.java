@@ -20,5 +20,5 @@ public class PhilosopherResponseDTO {
     private String bio;
     private String country;
 
-    private List<String> quotesContent;
+
 }

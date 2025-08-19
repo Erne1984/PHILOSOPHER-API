@@ -36,17 +36,7 @@ public class WorkMapper {
                 work.getYear(),
                 work.getSummary(),
                 work.getPhilosopher() != null ? work.getPhilosopher().getName() : null,
-                work.getCountry() != null ? work.getCountry().getName() : null,
-                work.getSchoolOfThoughts() != null
-                        ? work.getSchoolOfThoughts().stream()
-                        .map(school -> school.getName())
-                        .collect(Collectors.toList())
-                        : null,
-                work.getThemes() != null
-                        ? work.getThemes().stream()
-                        .map(theme -> theme.getName())
-                        .collect(Collectors.toList())
-                        : null
+                work.getCountry() != null ? work.getCountry().getName() : null
         );
     }
 }

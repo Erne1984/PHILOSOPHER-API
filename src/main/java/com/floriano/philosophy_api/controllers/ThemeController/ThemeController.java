@@ -1,12 +1,20 @@
 package com.floriano.philosophy_api.controllers.ThemeController;
 
+import com.floriano.philosophy_api.dto.PageDTO.PageDTO;
+import com.floriano.philosophy_api.dto.PhilosopherDTO.PhilosopherResponseDTO;
+import com.floriano.philosophy_api.dto.QuoteDTO.QuoteResponseDTO;
 import com.floriano.philosophy_api.dto.ThemeDTO.ThemeRequestDTO;
 import com.floriano.philosophy_api.dto.ThemeDTO.ThemeResponseDTO;
+import com.floriano.philosophy_api.dto.WorkDTO.WorkResponseDTO;
 import com.floriano.philosophy_api.mapper.ThemeMapper;
 import com.floriano.philosophy_api.model.Theme.Theme;
 import com.floriano.philosophy_api.payload.ApiResponse;
 import com.floriano.philosophy_api.services.ThemeService.ThemeService;
 import io.swagger.v3.oas.annotations.Operation;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,9 +33,84 @@ public class ThemeController {
 
     @Operation(summary = "Listar todos os temas", description = "Retorna todos os temas registrados no sistema")
     @GetMapping
-    public ResponseEntity<ApiResponse<List<ThemeResponseDTO>>> getThemes() {
-        List<ThemeResponseDTO> themes = themeService.getAllThemes();
-        return ResponseEntity.ok(new ApiResponse<>(true, "Lista de temas", themes));
+    public ResponseEntity<ApiResponse<PageDTO<ThemeResponseDTO>>> getAllThemes(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String order
+    ) {
+        Sort.Direction direction = order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+
+        Page<ThemeResponseDTO> themesPage = themeService.getAllThemes(pageable);
+        PageDTO<ThemeResponseDTO> pageDTO = new PageDTO<>(
+                themesPage.getContent(),
+                themesPage.getNumber(),
+                themesPage.getSize(),
+                themesPage.getTotalElements(),
+                themesPage.getTotalPages()
+        );
+        return new ResponseEntity<ApiResponse<PageDTO<ThemeResponseDTO>>>(
+                new ApiResponse<>(true, "Themes list", pageDTO),
+                HttpStatus.OK
+        );
+    }
+
+    @Operation(summary = "Listar filósofos de um tema", description = "Retorna todos os filósofos associados a um tema")
+    @GetMapping("/{id}/philosophers")
+    public ResponseEntity<ApiResponse<PageDTO<PhilosopherResponseDTO>>> getPhilosophersByTheme(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<PhilosopherResponseDTO> philosophersPage = themeService.getPhilosophersByTheme(id, pageable);
+        PageDTO<PhilosopherResponseDTO> pageDTO = new PageDTO<>(
+                philosophersPage.getContent(),
+                philosophersPage.getNumber(),
+                philosophersPage.getSize(),
+                philosophersPage.getTotalElements(),
+                philosophersPage.getTotalPages()
+        );
+        return ResponseEntity.ok(new ApiResponse<>(true, "Philosophers list", pageDTO));
+    }
+
+    @Operation(summary = "Listar obras de um tema", description = "Retorna todas as obras associadas a um tema")
+    @GetMapping("/{id}/works")
+    public ResponseEntity<ApiResponse<PageDTO<WorkResponseDTO>>> getWorksByTheme(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<WorkResponseDTO> worksPage = themeService.getWorksByTheme(id, pageable);
+        PageDTO<WorkResponseDTO> pageDTO = new PageDTO<>(
+                worksPage.getContent(),
+                worksPage.getNumber(),
+                worksPage.getSize(),
+                worksPage.getTotalElements(),
+                worksPage.getTotalPages()
+        );
+        return ResponseEntity.ok(new ApiResponse<>(true, "Works list", pageDTO));
+    }
+
+    @Operation(summary = "Listar citações de um tema", description = "Retorna todas as citações associadas a um tema")
+    @GetMapping("/{id}/quotes")
+    public ResponseEntity<ApiResponse<PageDTO<QuoteResponseDTO>>> getQuotesByTheme(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<QuoteResponseDTO> quotesPage = themeService.getQuotesByTheme(id, pageable);
+        PageDTO<QuoteResponseDTO> pageDTO = new PageDTO<>(
+                quotesPage.getContent(),
+                quotesPage.getNumber(),
+                quotesPage.getSize(),
+                quotesPage.getTotalElements(),
+                quotesPage.getTotalPages()
+        );
+        return ResponseEntity.ok(new ApiResponse<>(true, "Quotes list", pageDTO));
     }
 
     @Operation(summary = "Buscar tema por ID", description = "Retorna os detalhes de um tema pelo seu ID")
