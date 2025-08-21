@@ -17,9 +17,11 @@ import com.floriano.philosophy_api.repositories.ThemeRepository.ThemeRepository;
 import com.floriano.philosophy_api.repositories.WorkRepository.WorkRepository;
 import com.floriano.philosophy_api.services.ThemeService.utils.ThemeDeleteHelper;
 import com.floriano.philosophy_api.services.ThemeService.utils.ThemeUpdateHelper;
+import com.floriano.philosophy_api.specification.ThemeSpecification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -68,11 +70,13 @@ public class ThemeService {
     public Page<QuoteResponseDTO> getQuotesByTheme(Long themeId, Pageable pageable) {
         Theme theme = themeRepository.findById(themeId)
                 .orElseThrow(() -> new ThemeIdNotFoundException("Theme not found"));
+
         List<QuoteResponseDTO> dtos = theme.getQuotes()
                 .stream()
                 .map(q -> new QuoteResponseDTO(q.getId(), q.getContent(), q.getPhilosopher() != null ? q.getPhilosopher().getName() : null,
                         q.getWork() != null ? q.getWork().getTitle() : "No work associated"))
                 .toList();
+
         return new PageImpl<>(dtos, pageable, dtos.size());
     }
 
@@ -81,6 +85,13 @@ public class ThemeService {
                 .orElseThrow(() -> new ThemeIdNotFoundException("Theme not found"));
 
         return ThemeMapper.toDTO(theme);
+    }
+
+    public Page<ThemeResponseDTO> searchThemes(String name, Pageable pageable) {
+        Specification<Theme> spec = ThemeSpecification.hasName(name);
+
+        return themeRepository.findAll(spec, pageable)
+                .map(ThemeMapper::toDTO);
     }
 
     public Theme createTheme(ThemeRequestDTO dto) {

@@ -217,8 +217,6 @@ citações, com foco em uso educacional e exploração livre por estudantes, ent
 | Parâmetro           | Tipo    | Obrigatório | Exemplo         | Descrição                                        |
 |---------------------|---------|-------------|-----------------|--------------------------------------------------|
 | nameTheme           | string  | Não         | Existencialismo | Nome do tema                                     |
-| originCenturyAfter  | int     | Não         | 1800            | Filtrar publicados depois de um ano              |
-| originCenturyBefore | int     | Não         | 1900            | Filtrar publicados antes de um ano               |
 | sortBy              | string  | Não         | publishedAfter  | Campo de ordenação                               |
 | order               | string  | Não         | asc ou desc     | Ordem da ordenação                               |
 | offset              | int     | Não         | 0               | Posição inicial dos dados recuperados            |
