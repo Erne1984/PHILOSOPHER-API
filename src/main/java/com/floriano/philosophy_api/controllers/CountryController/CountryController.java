@@ -2,13 +2,20 @@ package com.floriano.philosophy_api.controllers.CountryController;
 
 import com.floriano.philosophy_api.dto.CountryDTO.CountryRequestDTO;
 import com.floriano.philosophy_api.dto.CountryDTO.CountryResponseDTO;
+import com.floriano.philosophy_api.dto.PageDTO.PageDTO;
 import com.floriano.philosophy_api.dto.PhilosopherDTO.PhilosopherResponseDTO;
 import com.floriano.philosophy_api.dto.WorkDTO.WorkResponseDTO;
 import com.floriano.philosophy_api.mapper.CountryMapper;
+import com.floriano.philosophy_api.mapper.PageMapper;
 import com.floriano.philosophy_api.model.Country.Country;
 import com.floriano.philosophy_api.payload.ApiResponse;
+import com.floriano.philosophy_api.payload.ResponseFactory;
 import com.floriano.philosophy_api.services.CountryService.CountryService;
 import io.swagger.v3.oas.annotations.Operation;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -51,6 +58,22 @@ public class CountryController {
     public ResponseEntity<ApiResponse<List<WorkResponseDTO>>> getWorksByCountry(@PathVariable Long id){
         List<WorkResponseDTO> workResponseDTOS = countryService.getWorksByCountry(id);
         return ResponseEntity.ok(new ApiResponse<>(true, "Works of " + workResponseDTOS.get(0).getCountryName() + " found", workResponseDTOS));
+    }
+
+    @Operation(summary = "Search Countries", description = "Searches for Countries by name")
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<PageDTO<CountryResponseDTO>>> searchPhilosophers(@RequestParam(required = false) String name,
+                                                                                           @RequestParam(defaultValue = "0") int page,
+                                                                                           @RequestParam(defaultValue = "10") int size,
+                                                                                           @RequestParam(defaultValue = "id") String sortBy,
+                                                                                           @RequestParam(defaultValue = "asc") String order)
+    {
+        Sort.Direction direction = order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+
+        Page<CountryResponseDTO> countriesPage = countryService.searchCountries(name, pageable);
+
+        return ResponseFactory.ok("Philosophers searched", PageMapper.toDTO(countriesPage));
     }
 
     @Operation(summary = "Criar país", description = "Cria um novo país no sistema")

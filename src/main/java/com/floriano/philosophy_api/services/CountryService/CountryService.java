@@ -17,6 +17,11 @@ import com.floriano.philosophy_api.repositories.PhilosopherRepository.Philosophe
 import com.floriano.philosophy_api.repositories.WorkRepository.WorkRepository;
 import com.floriano.philosophy_api.services.CountryService.utils.CountryDeleteHelper;
 import com.floriano.philosophy_api.services.CountryService.utils.CountryUpdateHelper;
+import com.floriano.philosophy_api.specification.CountrySpecification;
+import com.floriano.philosophy_api.specification.PhilosopherSpecification;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -70,6 +75,12 @@ public class CountryService {
         return workList.stream()
                 .map(WorkMapper::toDTO)
                 .toList();
+    }
+
+    public Page<CountryResponseDTO> searchCountries(String name, Pageable pageable) {
+        Specification<Country> spec = CountrySpecification.hasName(name);
+
+        return countryRepository.findAll(spec, pageable).map(CountryMapper::toDTO);
     }
 
     public Country createCountry(CountryRequestDTO dto) {
