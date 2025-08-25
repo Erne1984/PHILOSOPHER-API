@@ -23,6 +23,11 @@ import com.floriano.philosophy_api.repositories.ThemeRepository.ThemeRepository;
 import com.floriano.philosophy_api.repositories.WorkRepository.WorkRepository;
 import com.floriano.philosophy_api.services.PhilosopherService.utils.PhilosopherDeleteHelper;
 import com.floriano.philosophy_api.services.PhilosopherService.utils.PhilosopherUpdateHelper;
+import com.floriano.philosophy_api.specification.PhilosopherSpecification;
+import com.floriano.philosophy_api.specification.QuoteSpecification;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -116,6 +121,11 @@ public class PhilosopherService {
                 .toList();
     }
 
+    public Page<PhilosopherResponseDTO> searchPhilosophers(String name, Pageable pageable) {
+        Specification<Philosopher> spec = PhilosopherSpecification.hasName(name);
+
+        return philosopherRepository.findAll(spec, pageable).map(PhilosopherMapper::toDTO);
+    }
 
     public Philosopher createPhilosopher(PhilosopherRequestDTO dto) {
 

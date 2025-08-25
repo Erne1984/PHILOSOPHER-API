@@ -1,15 +1,23 @@
 package com.floriano.philosophy_api.controllers.PhilosopherController;
 
 import com.floriano.philosophy_api.dto.InfluenceDTO.InfluenceResponseDTO;
+import com.floriano.philosophy_api.dto.PageDTO.PageDTO;
 import com.floriano.philosophy_api.dto.PhilosopherDTO.PhilosopherRequestDTO;
 import com.floriano.philosophy_api.dto.PhilosopherDTO.PhilosopherResponseDTO;
 import com.floriano.philosophy_api.dto.QuoteDTO.QuoteResponseDTO;
+import com.floriano.philosophy_api.dto.ThemeDTO.ThemeResponseDTO;
 import com.floriano.philosophy_api.dto.WorkDTO.WorkResponseDTO;
+import com.floriano.philosophy_api.mapper.PageMapper;
 import com.floriano.philosophy_api.mapper.PhilosopherMapper;
 import com.floriano.philosophy_api.model.Philosopher.Philosopher;
 import com.floriano.philosophy_api.payload.ApiResponse;
+import com.floriano.philosophy_api.payload.ResponseFactory;
 import com.floriano.philosophy_api.services.PhilosopherService.PhilosopherService;
 import io.swagger.v3.oas.annotations.Operation;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -79,6 +87,22 @@ public class PhilosopherController {
     public ResponseEntity<ApiResponse<List<InfluenceResponseDTO>>> getInfluencers(@PathVariable Long id) {
         List<InfluenceResponseDTO> list = philosopherService.getInfluencersOfPhilosopher(id);
         return ResponseEntity.ok(new ApiResponse<>(true, "Influencers found", list));
+    }
+
+    @Operation(summary = "Search Philosophers", description = "Searches for philosophers by name")
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<PageDTO<PhilosopherResponseDTO>>> searchPhilosophers(@RequestParam(required = false) String name,
+                                                                               @RequestParam(defaultValue = "0") int page,
+                                                                               @RequestParam(defaultValue = "10") int size,
+                                                                               @RequestParam(defaultValue = "id") String sortBy,
+                                                                               @RequestParam(defaultValue = "asc") String order)
+    {
+        Sort.Direction direction = order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+
+        Page<PhilosopherResponseDTO> philosophersPage = philosopherService.searchPhilosophers(name, pageable);
+
+        return ResponseFactory.ok("Philosophers searched", PageMapper.toDTO(philosophersPage));
     }
 
     @Operation(summary = "Criar filósofo", description = "Adiciona um novo filósofo ao sistema")
