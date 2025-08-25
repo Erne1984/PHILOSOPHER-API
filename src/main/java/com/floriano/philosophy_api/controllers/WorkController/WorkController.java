@@ -1,18 +1,23 @@
 package com.floriano.philosophy_api.controllers.WorkController;
 
+import com.floriano.philosophy_api.dto.PageDTO.PageDTO;
 import com.floriano.philosophy_api.dto.QuoteDTO.QuoteResponseDTO;
+import com.floriano.philosophy_api.dto.ThemeDTO.ThemeResponseDTO;
 import com.floriano.philosophy_api.dto.WorkDTO.WorkRequestDTO;
 import com.floriano.philosophy_api.dto.WorkDTO.WorkResponseDTO;
+import com.floriano.philosophy_api.mapper.PageMapper;
 import com.floriano.philosophy_api.mapper.WorkMapper;
 import com.floriano.philosophy_api.model.Work.Work;
 import com.floriano.philosophy_api.payload.ApiResponse;
+import com.floriano.philosophy_api.payload.ResponseFactory;
 import com.floriano.philosophy_api.services.WorkService.WorkService;
 import io.swagger.v3.oas.annotations.Operation;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/v1/works")
@@ -24,48 +29,93 @@ public class WorkController {
         this.workService = workService;
     }
 
-    @Operation(summary = "Listar todas as obras", description = "Retorna uma lista com todas as obras registradas no sistema")
+    @Operation(summary = "List all works", description = "Returns all works registered in the system")
     @GetMapping
-    public ResponseEntity<ApiResponse<List<WorkResponseDTO>>> getAllWorks() {
-        List<WorkResponseDTO> workResponseDTOS = workService.getAllWorks();
-        return ResponseEntity.ok(new ApiResponse<>(true, "Works list", workResponseDTOS));
+    public ResponseEntity<ApiResponse<PageDTO<WorkResponseDTO>>> getAllWorks(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String order
+    ) {
+        Sort.Direction direction = order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+
+        Page<WorkResponseDTO> worksPage = workService.getAllWorks(pageable);
+
+        return ResponseFactory.ok("Works list", PageMapper.toDTO(worksPage));
     }
 
-    @Operation(summary = "Buscar obra por ID", description = "Retorna os detalhes de uma obra específica pelo seu ID")
+    @Operation(summary = "Get work by ID", description = "Returns work details by its ID")
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<WorkResponseDTO>> getWorkById(@PathVariable Long id) {
-        WorkResponseDTO workResponseDTOS = workService.getWorkById(id);
-        return ResponseEntity.ok(new ApiResponse<>(true, "Work found", workResponseDTOS));
+        WorkResponseDTO work = workService.getWorkById(id);
+        return ResponseFactory.ok("Work found", work);
     }
 
-    @Operation(summary = "Listar citações de uma obra", description = "Retorna todas as citações relacionadas a uma obra específica")
+    @Operation(summary = "List quotes by work", description = "Returns all quotes associated with a work")
     @GetMapping("/{id}/quotes")
-    public ResponseEntity<ApiResponse<List<QuoteResponseDTO>>> getQuotesByWork(@PathVariable Long id) {
-        List<QuoteResponseDTO> quoteResponseDTOList = workService.getQuotesByWork(id);
-        return ResponseEntity.ok(new ApiResponse<>(true, "Quotes of work found", quoteResponseDTOList));
+    public ResponseEntity<ApiResponse<PageDTO<QuoteResponseDTO>>> getQuotesByWork(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<QuoteResponseDTO> quotesPage = workService.getQuotesByWork(id, pageable);
+
+        return ResponseFactory.ok("Quotes list", PageMapper.toDTO(quotesPage));
     }
 
-    @Operation(summary = "Criar obra", description = "Adiciona uma nova obra ao sistema")
+    @Operation(summary = "List themes by work", description = "Returns all themes associated with a work")
+    @GetMapping("/{id}/themes")
+    public ResponseEntity<ApiResponse<PageDTO<ThemeResponseDTO>>> getThemesByWork(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ThemeResponseDTO> themePage = workService.getThemesByWork(id, pageable);
+
+        return ResponseFactory.ok("Theme list", PageMapper.toDTO(themePage));
+    }
+
+    @Operation(summary = "Search works", description = "Searches for works by title")
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<PageDTO<WorkResponseDTO>>> searchWorks(
+            @RequestParam(required = false) String title,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String order
+    ) {
+        Sort.Direction direction = order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+
+        Page<WorkResponseDTO> worksPage = workService.searchWorks(title, pageable);
+
+        return ResponseFactory.ok("Works searched", PageMapper.toDTO(worksPage));
+    }
+
+    @Operation(summary = "Create work", description = "Adds a new work to the system")
     @PostMapping
     public ResponseEntity<ApiResponse<WorkResponseDTO>> createWork(@RequestBody WorkRequestDTO dto) {
-        Work work = workService.createWork(dto);
-        WorkResponseDTO workResponseDTO = WorkMapper.toDTO(work);
-        return new ResponseEntity<>(new ApiResponse<>(true, "Obra criada com sucesso", workResponseDTO), HttpStatus.CREATED);
+        Work created = workService.createWork(dto);
+        WorkResponseDTO response = WorkMapper.toDTO(created);
+        return ResponseFactory.created("Work created successfully", response);
     }
 
-    @Operation(summary = "Atualizar obra", description = "Atualiza os dados de uma obra existente pelo seu ID")
+    @Operation(summary = "Update work", description = "Updates an existing work by its ID")
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<WorkResponseDTO>> updateWork(@PathVariable Long id, @RequestBody WorkRequestDTO dto) {
         Work updated = workService.updateWork(id, dto);
-        WorkResponseDTO responseDTO = WorkMapper.toDTO(updated);
-        return  new ResponseEntity<>(new ApiResponse<>(true, "Work updated successfully", responseDTO), HttpStatus.OK);
+        WorkResponseDTO response = WorkMapper.toDTO(updated);
+        return ResponseFactory.ok("Work updated successfully", response);
     }
 
-    @Operation(summary = "Deletar obra", description = "Remove uma obra do sistema pelo seu ID")
+    @Operation(summary = "Delete work", description = "Removes a work from the system by its ID")
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<WorkResponseDTO>> deleteWork(@PathVariable Long id){
+    public ResponseEntity<ApiResponse<WorkResponseDTO>> deleteWork(@PathVariable Long id) {
         Work deleted = workService.deleteWork(id);
         WorkResponseDTO responseDTO = WorkMapper.toDTO(deleted);
-        return  new ResponseEntity<>(new ApiResponse<>(true, "Work with id " + id + " deleted successfully", responseDTO), HttpStatus.OK);
+        return ResponseFactory.ok("Work with id " + id + " deleted successfully!", responseDTO);
     }
 }
