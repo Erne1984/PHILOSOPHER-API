@@ -3,6 +3,7 @@ package com.floriano.philosophy_api.controllers.SchoolOfThoughtController;
 import com.floriano.philosophy_api.dto.PageDTO.PageDTO;
 import com.floriano.philosophy_api.dto.SchoolOfThoughtDTO.SchoolOfThoughtRequestDTO;
 import com.floriano.philosophy_api.dto.SchoolOfThoughtDTO.SchoolOfThoughtResponseDTO;
+import com.floriano.philosophy_api.dto.ThemeDTO.ThemeResponseDTO;
 import com.floriano.philosophy_api.dto.WorkDTO.WorkResponseDTO;
 import com.floriano.philosophy_api.mapper.PageMapper;
 import com.floriano.philosophy_api.mapper.SchoolOfThoughtMapper;
@@ -35,9 +36,16 @@ public class SchoolOfThoughtController {
 
     @Operation(summary = "Listar escolas filosóficas", description = "Retorna todas as escolas de pensamento registradas no sistema")
     @GetMapping
-    public ResponseEntity<ApiResponse<List<SchoolOfThoughtResponseDTO>>> getSchoolsOfThought() {
-        List<SchoolOfThoughtResponseDTO> dtoList = schoolOfThoughtService.getSchoolOfThoughts();
-        return ResponseFactory.ok("Schools list", dtoList);
+    public ResponseEntity<ApiResponse<PageDTO<SchoolOfThoughtResponseDTO>>> getSchoolsOfThought(@RequestParam(defaultValue = "0") int page,
+                                                                                      @RequestParam(defaultValue = "10") int size,
+                                                                                      @RequestParam(defaultValue = "id") String sortBy,
+                                                                                      @RequestParam(defaultValue = "asc") String order) {
+        Sort.Direction direction = order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+
+        Page<SchoolOfThoughtResponseDTO> schoolOfThoughtsPage = schoolOfThoughtService.getSchoolOfThoughts(pageable);
+
+        return ResponseFactory.ok("Schools list", PageMapper.toDTO(schoolOfThoughtsPage));
     }
 
     @Operation(summary = "Buscar escola filosófica por ID", description = "Retorna os detalhes de uma escola de pensamento pelo seu ID")

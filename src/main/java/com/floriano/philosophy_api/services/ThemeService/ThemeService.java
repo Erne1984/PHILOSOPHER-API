@@ -80,18 +80,17 @@ public class ThemeService {
         return new PageImpl<>(dtos, pageable, dtos.size());
     }
 
+    public Page<ThemeResponseDTO> searchThemes(String name, Pageable pageable) {
+        Specification<Theme> spec = ThemeSpecification.hasName(name);
+
+        return themeRepository.findAll(spec, pageable).map(ThemeMapper::toDTO);
+    }
+
     public ThemeResponseDTO getThemeById(Long id) {
         Theme theme = themeRepository.findById(id)
                 .orElseThrow(() -> new ThemeIdNotFoundException("Theme not found"));
 
         return ThemeMapper.toDTO(theme);
-    }
-
-    public Page<ThemeResponseDTO> searchThemes(String name, Pageable pageable) {
-        Specification<Theme> spec = ThemeSpecification.hasName(name);
-
-        return themeRepository.findAll(spec, pageable)
-                .map(ThemeMapper::toDTO);
     }
 
     public Theme createTheme(ThemeRequestDTO dto) {

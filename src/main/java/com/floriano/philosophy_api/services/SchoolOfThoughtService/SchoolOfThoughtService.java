@@ -2,6 +2,7 @@ package com.floriano.philosophy_api.services.SchoolOfThoughtService;
 
 import com.floriano.philosophy_api.dto.SchoolOfThoughtDTO.SchoolOfThoughtRequestDTO;
 import com.floriano.philosophy_api.dto.SchoolOfThoughtDTO.SchoolOfThoughtResponseDTO;
+import com.floriano.philosophy_api.dto.ThemeDTO.ThemeResponseDTO;
 import com.floriano.philosophy_api.dto.WorkDTO.WorkResponseDTO;
 import com.floriano.philosophy_api.exceptions.SchoolOfThoghtNotFoundException;
 import com.floriano.philosophy_api.mapper.SchoolOfThoughtMapper;
@@ -36,14 +37,11 @@ public class SchoolOfThoughtService {
         this.philosopherRepository = philosopherRepository;
     }
 
-    public List<SchoolOfThoughtResponseDTO> getSchoolOfThoughts() {
+    public Page<SchoolOfThoughtResponseDTO> getSchoolOfThoughts(Pageable pageable) {
 
-        List<SchoolOfThought> schoolOfThoughts = schoolOfThoughtRepository.findAll();
+        Page<SchoolOfThought> schoolOfThoughts = schoolOfThoughtRepository.findAll(pageable);
 
-        return schoolOfThoughts
-                .stream()
-                .map(SchoolOfThoughtMapper::toDTO)
-                .toList();
+        return schoolOfThoughts.map(SchoolOfThoughtMapper::toDTO);
     }
 
     public SchoolOfThoughtResponseDTO getSchoolOfThought(Long id) {

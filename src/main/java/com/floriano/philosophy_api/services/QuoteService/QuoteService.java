@@ -4,6 +4,7 @@ import com.floriano.philosophy_api.dto.QuoteDTO.QuoteRequestDTO;
 import com.floriano.philosophy_api.dto.QuoteDTO.QuoteResponseDTO;
 import com.floriano.philosophy_api.exceptions.QuoteIdNotFoundException;
 import com.floriano.philosophy_api.mapper.QuoteMapper;
+import com.floriano.philosophy_api.mapper.ThemeMapper;
 import com.floriano.philosophy_api.model.Philosopher.Philosopher;
 import com.floriano.philosophy_api.model.Quote.Quote;
 import com.floriano.philosophy_api.model.Theme.Theme;
@@ -14,7 +15,13 @@ import com.floriano.philosophy_api.repositories.ThemeRepository.ThemeRepository;
 import com.floriano.philosophy_api.repositories.WorkRepository.WorkRepository;
 import com.floriano.philosophy_api.services.QuoteService.utils.QuoteDeleteHelper;
 import com.floriano.philosophy_api.services.QuoteService.utils.QuoteUpdateHelper;
+import com.floriano.philosophy_api.specification.QuoteSpecification;
+import com.floriano.philosophy_api.specification.ThemeSpecification;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
 
 import java.util.List;
 
@@ -33,14 +40,10 @@ public class QuoteService {
         this.themeRepository = themeRepository;
     }
 
-    public List<QuoteResponseDTO> getAllQuotes() {
-        List<Quote> quotes = quoteRepository.findAll();
+    public Page<QuoteResponseDTO> getAllQuotes(Pageable pageable) {
+        Page<Quote> quotes = quoteRepository.findAll(pageable);
 
-        List<QuoteResponseDTO> quoteResponseDTOList = quotes.stream()
-                .map(QuoteMapper::toDTO)
-                .toList();
-
-        return quoteResponseDTOList;
+        return quotes.map(QuoteMapper::toDTO);
     }
 
     public QuoteResponseDTO getQuoteById(Long id) {
@@ -48,6 +51,12 @@ public class QuoteService {
                 .orElseThrow(() -> new QuoteIdNotFoundException("Quote not found"));
 
         return QuoteMapper.toDTO(quote);
+    }
+
+    public Page<QuoteResponseDTO> searchQuotes(String content, Pageable pageable) {
+        Specification<Quote> spec = QuoteSpecification.hasContent(content);
+
+        return quoteRepository.findAll(spec, pageable).map(QuoteMapper::toDTO);
     }
 
     public Quote createQuote(QuoteRequestDTO dto) {

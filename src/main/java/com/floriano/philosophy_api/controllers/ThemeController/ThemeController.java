@@ -32,11 +32,10 @@ public class ThemeController {
 
     @Operation(summary = "List all themes", description = "Returns all themes registered in the system")
     @GetMapping
-    public ResponseEntity<ApiResponse<PageDTO<ThemeResponseDTO>>> getAllThemes(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "asc") String order
+    public ResponseEntity<ApiResponse<PageDTO<ThemeResponseDTO>>> getAllThemes(@RequestParam(defaultValue = "0") int page,
+                                                                               @RequestParam(defaultValue = "10") int size,
+                                                                               @RequestParam(defaultValue = "id") String sortBy,
+                                                                               @RequestParam(defaultValue = "asc") String order
     ) {
         Sort.Direction direction = order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
@@ -60,10 +59,9 @@ public class ThemeController {
 
     @Operation(summary = "List works by theme", description = "Returns all works associated with a theme")
     @GetMapping("/{id}/works")
-    public ResponseEntity<ApiResponse<PageDTO<WorkResponseDTO>>> getWorksByTheme(
-            @PathVariable Long id,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+    public ResponseEntity<ApiResponse<PageDTO<WorkResponseDTO>>> getWorksByTheme(@PathVariable Long id,
+                                                                                 @RequestParam(defaultValue = "0") int page,
+                                                                                 @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         Page<WorkResponseDTO> worksPage = themeService.getWorksByTheme(id, pageable);
@@ -73,10 +71,9 @@ public class ThemeController {
 
     @Operation(summary = "List quotes by theme", description = "Returns all quotes associated with a theme")
     @GetMapping("/{id}/quotes")
-    public ResponseEntity<ApiResponse<PageDTO<QuoteResponseDTO>>> getQuotesByTheme(
-            @PathVariable Long id,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+    public ResponseEntity<ApiResponse<PageDTO<QuoteResponseDTO>>> getQuotesByTheme(@PathVariable Long id,
+                                                                                   @RequestParam(defaultValue = "0") int page,
+                                                                                   @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
         Page<QuoteResponseDTO> quotesPage = themeService.getQuotesByTheme(id, pageable);
@@ -93,13 +90,12 @@ public class ThemeController {
 
     @Operation(summary = "Search themes", description = "Searches for themes by name")
     @GetMapping("/search")
-    public ResponseEntity<ApiResponse<PageDTO<ThemeResponseDTO>>> searchThemes(
-            @RequestParam(required = false) String name,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "asc") String order
-    ) {
+    public ResponseEntity<ApiResponse<PageDTO<ThemeResponseDTO>>> searchThemes(@RequestParam(required = false) String name,
+                                                                               @RequestParam(defaultValue = "0") int page,
+                                                                               @RequestParam(defaultValue = "10") int size,
+                                                                               @RequestParam(defaultValue = "id") String sortBy,
+                                                                               @RequestParam(defaultValue = "asc") String order)
+    {
         Sort.Direction direction = order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
