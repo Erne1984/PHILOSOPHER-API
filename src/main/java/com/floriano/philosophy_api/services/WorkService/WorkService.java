@@ -4,6 +4,8 @@ import com.floriano.philosophy_api.dto.QuoteDTO.QuoteResponseDTO;
 import com.floriano.philosophy_api.dto.ThemeDTO.ThemeResponseDTO;
 import com.floriano.philosophy_api.dto.WorkDTO.WorkRequestDTO;
 import com.floriano.philosophy_api.dto.WorkDTO.WorkResponseDTO;
+import com.floriano.philosophy_api.exceptions.SchoolOfThoghtNotFoundException;
+import com.floriano.philosophy_api.exceptions.ThemeIdNotFoundException;
 import com.floriano.philosophy_api.exceptions.WorkIdNotFoundException;
 import com.floriano.philosophy_api.mapper.QuoteMapper;
 import com.floriano.philosophy_api.mapper.ThemeMapper;
@@ -11,6 +13,7 @@ import com.floriano.philosophy_api.mapper.WorkMapper;
 import com.floriano.philosophy_api.model.Country.Country;
 import com.floriano.philosophy_api.model.Philosopher.Philosopher;
 import com.floriano.philosophy_api.model.Quote.Quote;
+import com.floriano.philosophy_api.model.SchoolOfThought.SchoolOfThought;
 import com.floriano.philosophy_api.model.Theme.Theme;
 import com.floriano.philosophy_api.model.Work.Work;
 import com.floriano.philosophy_api.repositories.CountryRepository.CountryRepository;
@@ -103,6 +106,46 @@ public class WorkService {
                 .and(WorkSpecification.yearLessThanOrEqualTo(endYear));
 
         return workRepository.findAll(spec, pageable).map(WorkMapper::toDTO);
+    }
+
+    public void addThemeToWork(Long workId, Long themeId) {
+        Work work = workRepository.findById(workId)
+                .orElseThrow(() -> new WorkIdNotFoundException("Work not found"));
+        Theme theme = themeRepository.findById(themeId)
+                .orElseThrow(() -> new ThemeIdNotFoundException("Theme not found"));
+
+        work.addTheme(theme);
+        workRepository.save(work);
+    }
+
+    public void removeThemeFromWork(Long workId, Long themeId) {
+        Work work = workRepository.findById(workId)
+                .orElseThrow(() -> new WorkIdNotFoundException("Work not found"));
+        Theme theme = themeRepository.findById(themeId)
+                .orElseThrow(() -> new ThemeIdNotFoundException("Theme not found"));
+
+        work.removeTheme(theme);
+        workRepository.save(work);
+    }
+
+    public void addSchoolToWork(Long workId, Long schoolId) {
+        Work work = workRepository.findById(workId)
+                .orElseThrow(() -> new WorkIdNotFoundException("Work not found"));
+        SchoolOfThought school = schoolOfThoughtRepository.findById(schoolId)
+                .orElseThrow(() -> new SchoolOfThoghtNotFoundException("School not found"));
+
+        work.addSchoolOfThought(school);
+        workRepository.save(work);
+    }
+
+    public void removeSchoolFromWork(Long workId, Long schoolId) {
+        Work work = workRepository.findById(workId)
+                .orElseThrow(() -> new WorkIdNotFoundException("Work not found"));
+        SchoolOfThought school = schoolOfThoughtRepository.findById(schoolId)
+                .orElseThrow(() -> new SchoolOfThoghtNotFoundException("School not found"));
+
+        work.removeSchoolOfThought(school);
+        workRepository.save(work);
     }
 
     public Work createWork(WorkRequestDTO dto) {

@@ -98,6 +98,47 @@ public class WorkController {
         return ResponseFactory.ok("Works searched", PageMapper.toDTO(worksPage));
     }
 
+    @Operation(summary = "Add theme to work", description = "Associates a theme to a work")
+    @PostMapping("/{workId}/themes/{themeId}")
+    public ResponseEntity<ApiResponse<Void>> addThemeToWork(
+            @PathVariable Long workId,
+            @PathVariable Long themeId
+    ) {
+        workService.addThemeToWork(workId, themeId);
+        return ResponseFactory.ok("Theme added to work successfully", null);
+    }
+
+    @Operation(summary = "Remove theme from work", description = "Removes association between a theme and a work")
+    @DeleteMapping("/{workId}/themes/{themeId}")
+    public ResponseEntity<ApiResponse<Void>> removeThemeFromWork(
+            @PathVariable Long workId,
+            @PathVariable Long themeId
+    ) {
+        workService.removeThemeFromWork(workId, themeId);
+        return ResponseFactory.ok("Theme removed from work successfully", null);
+    }
+
+    @Operation(summary = "Add school of thought to work", description = "Associates a school of thought to a work")
+    @PostMapping("/{workId}/schools/{schoolId}")
+    public ResponseEntity<ApiResponse<Void>> addSchoolToWork(
+            @PathVariable Long workId,
+            @PathVariable Long schoolId
+    ) {
+        workService.addSchoolToWork(workId, schoolId);
+        return ResponseFactory.ok("School of thought added to work successfully", null);
+    }
+
+    @Operation(summary = "Remove school of thought from work", description = "Removes association between a school of thought and a work")
+    @DeleteMapping("/{workId}/schools/{schoolId}")
+    public ResponseEntity<ApiResponse<Void>> removeSchoolFromWork(
+            @PathVariable Long workId,
+            @PathVariable Long schoolId
+    ) {
+        workService.removeSchoolFromWork(workId, schoolId);
+        return ResponseFactory.ok("School of thought removed from work successfully", null);
+    }
+
+
     @Operation(summary = "Create work", description = "Adds a new work to the system")
     @PostMapping
     public ResponseEntity<ApiResponse<WorkResponseDTO>> createWork(@RequestBody WorkRequestDTO dto) {
