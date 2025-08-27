@@ -67,6 +67,27 @@ public class QuoteController {
         return ResponseFactory.ok("Quotes searched", PageMapper.toDTO(themesPage));
     }
 
+    @Operation(summary = "Add theme to quote", description = "Associates a theme to a quote")
+    @PostMapping("/{quoteId}/themes/{themeId}")
+    public ResponseEntity<ApiResponse<Void>> addThemeToQuote(
+            @PathVariable Long quoteId,
+            @PathVariable Long themeId
+    ) {
+        quoteService.addThemeToQuote(quoteId, themeId);
+        return ResponseFactory.ok("Theme added to quote successfully", null);
+    }
+
+    @Operation(summary = "Remove theme from work", description = "Removes association between a theme and a work")
+    @DeleteMapping("/{quoteId}/themes/{themeId}")
+    public ResponseEntity<ApiResponse<Void>> removeThemeFromQuote(
+            @PathVariable Long quoteId,
+            @PathVariable Long themeId
+    ) {
+        quoteService.removeThemeFromQuote(quoteId, themeId);
+        return ResponseFactory.ok("Theme removed from quote successfully", null);
+    }
+
+
     @Operation(summary = "Criar citação", description = "Adiciona uma nova citação ao sistema")
     @PostMapping
     public ResponseEntity<ApiResponse<QuoteResponseDTO>> createQuote(@RequestBody QuoteRequestDTO dto) {

@@ -3,6 +3,8 @@ package com.floriano.philosophy_api.services.QuoteService;
 import com.floriano.philosophy_api.dto.QuoteDTO.QuoteRequestDTO;
 import com.floriano.philosophy_api.dto.QuoteDTO.QuoteResponseDTO;
 import com.floriano.philosophy_api.exceptions.QuoteIdNotFoundException;
+import com.floriano.philosophy_api.exceptions.ThemeIdNotFoundException;
+import com.floriano.philosophy_api.exceptions.WorkIdNotFoundException;
 import com.floriano.philosophy_api.mapper.QuoteMapper;
 import com.floriano.philosophy_api.mapper.ThemeMapper;
 import com.floriano.philosophy_api.model.Philosopher.Philosopher;
@@ -57,6 +59,26 @@ public class QuoteService {
         Specification<Quote> spec = QuoteSpecification.hasContent(content);
 
         return quoteRepository.findAll(spec, pageable).map(QuoteMapper::toDTO);
+    }
+
+    public void addThemeToQuote(Long quoteId, Long themeId) {
+        Quote quote = quoteRepository.findById(quoteId)
+                .orElseThrow(() -> new QuoteIdNotFoundException("Quote not found"));
+        Theme theme = themeRepository.findById(themeId)
+                .orElseThrow(() -> new ThemeIdNotFoundException("Theme not found"));
+
+        quote.addTheme(theme);
+        quoteRepository.save(quote);
+    }
+
+    public void removeThemeFromQuote(Long quoteId, Long themeId) {
+        Quote quote = quoteRepository.findById(quoteId)
+                .orElseThrow(() -> new QuoteIdNotFoundException("Quote not found"));
+        Theme theme = themeRepository.findById(themeId)
+                .orElseThrow(() -> new ThemeIdNotFoundException("Theme not found"));
+
+        quote.removeTheme(theme);
+        quoteRepository.save(quote);
     }
 
     public Quote createQuote(QuoteRequestDTO dto) {
