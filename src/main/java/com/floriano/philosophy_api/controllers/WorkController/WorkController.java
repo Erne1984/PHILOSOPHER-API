@@ -82,6 +82,9 @@ public class WorkController {
     @GetMapping("/search")
     public ResponseEntity<ApiResponse<PageDTO<WorkResponseDTO>>> searchWorks(
             @RequestParam(required = false) String title,
+            @RequestParam(required = false) String philosopherName,
+            @RequestParam(required = false) Integer startYear,
+            @RequestParam(required = false) Integer endYear,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy,
@@ -90,7 +93,7 @@ public class WorkController {
         Sort.Direction direction = order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
-        Page<WorkResponseDTO> worksPage = workService.searchWorks(title, pageable);
+        Page<WorkResponseDTO> worksPage = workService.searchWorks(title, philosopherName, startYear, endYear, pageable);
 
         return ResponseFactory.ok("Works searched", PageMapper.toDTO(worksPage));
     }

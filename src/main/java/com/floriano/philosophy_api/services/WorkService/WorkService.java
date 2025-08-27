@@ -88,8 +88,20 @@ public class WorkService {
         return new PageImpl<>(dtos, pageable, dtos.size());
     }
 
-    public Page<WorkResponseDTO> searchWorks(String title, Pageable pageable) {
-        Specification<Work> spec = WorkSpecification.hasTitle(title);
+    public Page<WorkResponseDTO> searchWorks(
+            String title,
+            String philosopherName,
+            Integer startYear,
+            Integer endYear,
+            Pageable pageable
+    ) {
+        Specification<Work> spec = (root, query, cb) -> cb.conjunction();
+
+        spec = spec.and(WorkSpecification.hasTitle(title))
+                .and(WorkSpecification.hasPhilosopherName(philosopherName))
+                .and(WorkSpecification.yearGreaterThanOrEqualTo(startYear))
+                .and(WorkSpecification.yearLessThanOrEqualTo(endYear));
+
         return workRepository.findAll(spec, pageable).map(WorkMapper::toDTO);
     }
 
