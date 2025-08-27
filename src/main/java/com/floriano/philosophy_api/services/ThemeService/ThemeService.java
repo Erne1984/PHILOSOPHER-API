@@ -52,7 +52,7 @@ public class ThemeService {
                 .orElseThrow(() -> new ThemeIdNotFoundException("Theme not found"));
         List<PhilosopherResponseDTO> dtos = theme.getPhilosophers()
                 .stream()
-                .map(p -> new PhilosopherResponseDTO(p.getId(), p.getName(), p.getBirthYear(), p.getDeathYear(), p.getBio(), p.getCountry().getName()))
+                .map(p -> new PhilosopherResponseDTO(p.getId(), p.getName(), p.getBirthYear(), p.getDeathYear(), p.getBio(), p.getCountry().getName(), p.getSchoolOfThoughts().get(0).getName()))
                 .toList();
         return new PageImpl<>(dtos, pageable, dtos.size());
     }

@@ -61,7 +61,7 @@ public class PhilosopherController {
         if (responseDTOS.isEmpty()) {
             return new ResponseEntity<>(new ApiResponse<>(true, "Quotes not found", List.of()), HttpStatus.OK);
         }
-        return new ResponseEntity<>(new ApiResponse<>(true, "Quotes of " + responseDTOS.get(0).getPhilosopherName() +  " found", responseDTOS), HttpStatus.OK);
+        return new ResponseEntity<>(new ApiResponse<>(true, "Quotes of " + responseDTOS.get(0).getPhilosopherName() + " found", responseDTOS), HttpStatus.OK);
     }
 
     @Operation(summary = "Listar obras de um filósofo", description = "Retorna todas as obras escritas por um filósofo específico")
@@ -69,7 +69,7 @@ public class PhilosopherController {
     public ResponseEntity<ApiResponse<List<WorkResponseDTO>>> getWorksByPhilosopher(@PathVariable Long id) {
         List<WorkResponseDTO> workResponseDTOS = philosopherService.getWorksByPhilosopher(id);
 
-        if ( workResponseDTOS.isEmpty()) {
+        if (workResponseDTOS.isEmpty()) {
             return new ResponseEntity<>(new ApiResponse<>(true, "No works from this philosopher", List.of()), HttpStatus.OK);
         }
         return new ResponseEntity<>(new ApiResponse<>(true, "Works of " + workResponseDTOS.get(0).getPhilosopherName() + " found", workResponseDTOS), HttpStatus.OK);
@@ -92,15 +92,18 @@ public class PhilosopherController {
     @Operation(summary = "Search Philosophers", description = "Searches for philosophers by name")
     @GetMapping("/search")
     public ResponseEntity<ApiResponse<PageDTO<PhilosopherResponseDTO>>> searchPhilosophers(@RequestParam(required = false) String name,
-                                                                               @RequestParam(defaultValue = "0") int page,
-                                                                               @RequestParam(defaultValue = "10") int size,
-                                                                               @RequestParam(defaultValue = "id") String sortBy,
-                                                                               @RequestParam(defaultValue = "asc") String order)
-    {
+                                                                                           @RequestParam(required = false) String countryName,
+                                                                                           @RequestParam(required = false) String schoolName,
+                                                                                           @RequestParam(required = false) Integer startYear,
+                                                                                           @RequestParam(required = false) Integer endYear,
+                                                                                           @RequestParam(defaultValue = "0") int page,
+                                                                                           @RequestParam(defaultValue = "10") int size,
+                                                                                           @RequestParam(defaultValue = "id") String sortBy,
+                                                                                           @RequestParam(defaultValue = "asc") String order) {
         Sort.Direction direction = order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
-        Page<PhilosopherResponseDTO> philosophersPage = philosopherService.searchPhilosophers(name, pageable);
+        Page<PhilosopherResponseDTO> philosophersPage = philosopherService.searchPhilosophers(name, countryName, schoolName, startYear, endYear, pageable);
 
         return ResponseFactory.ok("Philosophers searched", PageMapper.toDTO(philosophersPage));
     }
@@ -120,7 +123,7 @@ public class PhilosopherController {
     public ResponseEntity<ApiResponse<PhilosopherResponseDTO>> updatePhilosopher(@PathVariable Long id, @RequestBody PhilosopherRequestDTO dto) {
         Philosopher updated = philosopherService.updatePhilosopher(id, dto);
         PhilosopherResponseDTO responseDTO = PhilosopherMapper.toDTO(updated);
-        return  new ResponseEntity<>(new ApiResponse<>(true, "Philosopher updated successfully!!", responseDTO), HttpStatus.OK);
+        return new ResponseEntity<>(new ApiResponse<>(true, "Philosopher updated successfully!!", responseDTO), HttpStatus.OK);
     }
 
     @Operation(summary = "Deletar filósofo", description = "Remove um filósofo do sistema pelo seu ID")
@@ -128,6 +131,6 @@ public class PhilosopherController {
     public ResponseEntity<ApiResponse<PhilosopherResponseDTO>> deletePhilosopher(@PathVariable Long id) {
         Philosopher deleted = philosopherService.deletePhilosopher(id);
         PhilosopherResponseDTO responseDTO = PhilosopherMapper.toDTO(deleted);
-        return  new ResponseEntity<>(new ApiResponse<>(true, "Philosopher deleted successfully!!", responseDTO), HttpStatus.OK);
+        return new ResponseEntity<>(new ApiResponse<>(true, "Philosopher deleted successfully!!", responseDTO), HttpStatus.OK);
     }
 }

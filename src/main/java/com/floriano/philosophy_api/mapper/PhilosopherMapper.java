@@ -29,7 +29,8 @@ public class PhilosopherMapper {
                 philosopher.getBirthYear(),
                 philosopher.getDeathYear(),
                 philosopher.getBio(),
-                philosopher.getCountry() != null ? philosopher.getCountry().getName() : null
+                philosopher.getCountry() != null ? philosopher.getCountry().getName() : null,
+                philosopher.getSchoolOfThoughts() != null ? philosopher.getSchoolOfThoughts().get(0).getName() : null
         );
     }
 }

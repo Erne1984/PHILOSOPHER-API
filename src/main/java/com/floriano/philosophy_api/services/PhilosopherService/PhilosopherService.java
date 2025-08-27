@@ -25,6 +25,7 @@ import com.floriano.philosophy_api.services.PhilosopherService.utils.Philosopher
 import com.floriano.philosophy_api.services.PhilosopherService.utils.PhilosopherUpdateHelper;
 import com.floriano.philosophy_api.specification.PhilosopherSpecification;
 import com.floriano.philosophy_api.specification.QuoteSpecification;
+import com.floriano.philosophy_api.specification.WorkSpecification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -90,7 +91,7 @@ public class PhilosopherService {
                 .map(WorkMapper::toDTO)
                 .toList();
 
-        return  workResponseDTOS;
+        return workResponseDTOS;
     }
 
     public List<InfluenceResponseDTO> getInfluencedByPhilosopher(Long id) {
@@ -121,8 +122,14 @@ public class PhilosopherService {
                 .toList();
     }
 
-    public Page<PhilosopherResponseDTO> searchPhilosophers(String name, Pageable pageable) {
-        Specification<Philosopher> spec = PhilosopherSpecification.hasName(name);
+    public Page<PhilosopherResponseDTO> searchPhilosophers(String name, String countryName, String schoolName, Integer startYear, Integer endYear, Pageable pageable) {
+        Specification<Philosopher> spec = (root, query, cb) -> cb.conjunction();
+
+        spec = spec.and(PhilosopherSpecification.hasName(name))
+                .and(PhilosopherSpecification.hasCountryName(countryName))
+                .and(PhilosopherSpecification.hasSchoolName(schoolName))
+                .and(PhilosopherSpecification.bornGreaterThanOrEqualTo(startYear))
+                .and(PhilosopherSpecification.bornBeforeThanOrEqualTo(endYear));
 
         return philosopherRepository.findAll(spec, pageable).map(PhilosopherMapper::toDTO);
     }
