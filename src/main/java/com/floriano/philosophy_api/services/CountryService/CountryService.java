@@ -20,6 +20,7 @@ import com.floriano.philosophy_api.services.CountryService.utils.CountryUpdateHe
 import com.floriano.philosophy_api.specification.CountrySpecification;
 import com.floriano.philosophy_api.specification.PhilosopherSpecification;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -39,13 +40,34 @@ public class CountryService {
         this.workRepository = workRepository;
     }
 
-    public List<CountryResponseDTO> getCountries() {
+    public Page<CountryResponseDTO> getCountries(Pageable pageable) {
 
-        List<Country> countryList = countryRepository.findAll();
+        Page<Country> countryList = countryRepository.findAll(pageable);
 
-        return countryList.stream()
+        List<CountryResponseDTO> dtos = countryList.stream()
                 .map(CountryMapper::toDTO)
                 .toList();
+
+        return new PageImpl<>(dtos, pageable, dtos.size());
+    }
+
+    public Page<PhilosopherResponseDTO> getPhilosophersByCountry(Long id, Pageable pageable) {
+        Country country = countryRepository.findById(id)
+                .orElseThrow(() -> new CountryNotFoundException("Country not Found"));
+
+        Page<Philosopher> philosophersPage = philosopherRepository.findByCountryId(country.getId(), pageable);
+
+        return philosophersPage.map(PhilosopherMapper::toDTO);
+    }
+
+
+    public Page<WorkResponseDTO> getWorksByCountry(Long id, Pageable pageable) {
+        Country country = countryRepository.findById(id)
+                .orElseThrow(() -> new CountryNotFoundException("Country not Found"));
+
+        Page<Work> workPage = workRepository.findByCountryId(country.getId(), pageable);
+
+        return workPage.map(WorkMapper::toDTO);
     }
 
     public CountryResponseDTO getCountryById(Long id) {
@@ -53,28 +75,6 @@ public class CountryService {
                 .orElseThrow(() -> new CountryNotFoundException("Country not Found"));
 
         return CountryMapper.toDTO(country);
-    }
-
-    public List<PhilosopherResponseDTO> getPhilosophersByCountry(Long id) {
-        Country country = countryRepository.findById(id)
-                .orElseThrow(() -> new CountryNotFoundException("Country not Found"));
-
-        List<Philosopher> philosopherList = philosopherRepository.findByCountryId(country.getId());
-
-        return philosopherList.stream()
-                .map(PhilosopherMapper::toDTO)
-                .toList();
-    }
-
-    public List<WorkResponseDTO> getWorksByCountry(Long id) {
-        Country country = countryRepository.findById(id)
-                .orElseThrow(() -> new CountryNotFoundException("Country not Found"));
-
-        List<Work> workList = workRepository.findByCountryId(country.getId());
-
-        return workList.stream()
-                .map(WorkMapper::toDTO)
-                .toList();
     }
 
     public Page<CountryResponseDTO> searchCountries(String name, Pageable pageable) {

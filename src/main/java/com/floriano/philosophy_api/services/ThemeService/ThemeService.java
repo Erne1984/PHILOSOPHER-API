@@ -7,6 +7,7 @@ import com.floriano.philosophy_api.dto.ThemeDTO.ThemeResponseDTO;
 import com.floriano.philosophy_api.dto.WorkDTO.WorkResponseDTO;
 import com.floriano.philosophy_api.exceptions.ThemeIdNotFoundException;
 import com.floriano.philosophy_api.mapper.ThemeMapper;
+import com.floriano.philosophy_api.mapper.WorkMapper;
 import com.floriano.philosophy_api.model.Philosopher.Philosopher;
 import com.floriano.philosophy_api.model.Quote.Quote;
 import com.floriano.philosophy_api.model.Theme.Theme;
@@ -62,7 +63,7 @@ public class ThemeService {
                 .orElseThrow(() -> new ThemeIdNotFoundException("Theme not found"));
         List<WorkResponseDTO> dtos = theme.getWorks()
                 .stream()
-                .map(w -> new WorkResponseDTO(w.getId(), w.getTitle(), w.getYear(), w.getSummary(), w.getPhilosopher().getName(), w.getCountry().getName()))
+                .map(WorkMapper::toDTO)
                 .toList();
         return new PageImpl<>(dtos, pageable, dtos.size());
     }

@@ -16,11 +16,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/v1/countries")
@@ -34,30 +31,54 @@ public class CountryController {
 
     @Operation(summary = "Get all countries", description = "Returns the complete list of registered countries")
     @GetMapping
-    public ResponseEntity<ApiResponse<List<CountryResponseDTO>>> getAllCountries() {
-        List<CountryResponseDTO> countriesResponse = countryService.getCountries();
-        return ResponseEntity.ok(new ApiResponse<>(true, "Countries retrieved successfully", countriesResponse));
+    public ResponseEntity<ApiResponse<PageDTO<CountryResponseDTO>>> getAllCountries(@RequestParam(defaultValue = "0") int page,
+                                                                                    @RequestParam(defaultValue = "10") int size,
+                                                                                    @RequestParam(defaultValue = "id") String sortBy,
+                                                                                    @RequestParam(defaultValue = "asc") String order) {
+        Sort.Direction direction = order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+        Page<CountryResponseDTO> countriesResponse = countryService.getCountries(pageable);
+
+        return ResponseFactory.ok("Countries list retrieved successfully", PageMapper.toDTO(countriesResponse));
     }
 
     @Operation(summary = "Get country by ID", description = "Returns detailed information about a country by its ID")
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<CountryResponseDTO>> getByIdCountry(@PathVariable Long id){
+    public ResponseEntity<ApiResponse<CountryResponseDTO>> getByIdCountry(@PathVariable Long id) {
         CountryResponseDTO countryResponseDTO = countryService.getCountryById(id);
-        return ResponseEntity.ok(new ApiResponse<>(true, "Country found", countryResponseDTO));
+
+        return ResponseFactory.ok("Countries found", countryResponseDTO);
     }
 
     @Operation(summary = "Get philosophers by country", description = "Returns all philosophers associated with a specific country")
     @GetMapping("/{id}/philosophers")
-    public ResponseEntity<ApiResponse<List<PhilosopherResponseDTO>>> getPhilosophersByCountry(@PathVariable Long id){
-        List<PhilosopherResponseDTO> philosopherResponseDTOS = countryService.getPhilosophersByCountry(id);
-        return ResponseEntity.ok(new ApiResponse<>(true, "Philosophers from country retrieved successfully", philosopherResponseDTOS));
+    public ResponseEntity<ApiResponse<PageDTO<PhilosopherResponseDTO>>> getPhilosophersByCountry(@PathVariable Long id,
+                                                                                                 @RequestParam(defaultValue = "0") int page,
+                                                                                                 @RequestParam(defaultValue = "10") int size,
+                                                                                                 @RequestParam(defaultValue = "id") String sortBy,
+                                                                                                 @RequestParam(defaultValue = "asc") String order) {
+
+        Sort.Direction direction = order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+
+        Page<PhilosopherResponseDTO> philosophersPage = countryService.getPhilosophersByCountry(id, pageable);
+
+        return ResponseFactory.ok("Philosophers from country retrieved successfully", PageMapper.toDTO(philosophersPage));
     }
 
     @Operation(summary = "Get works by country", description = "Returns all works authored by philosophers of a given country")
     @GetMapping("/{id}/works")
-    public ResponseEntity<ApiResponse<List<WorkResponseDTO>>> getWorksByCountry(@PathVariable Long id){
-        List<WorkResponseDTO> workResponseDTOS = countryService.getWorksByCountry(id);
-        return ResponseEntity.ok(new ApiResponse<>(true, "Works from country retrieved successfully", workResponseDTOS));
+    public ResponseEntity<ApiResponse<PageDTO<WorkResponseDTO>>> getWorksByCountry(@PathVariable Long id,
+                                                                                @RequestParam(defaultValue = "0") int page,
+                                                                                @RequestParam(defaultValue = "10") int size,
+                                                                                @RequestParam(defaultValue = "id") String sortBy,
+                                                                                @RequestParam(defaultValue = "asc") String order) {
+        Sort.Direction direction = order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+
+        Page<WorkResponseDTO> workResponseDTOS = countryService.getWorksByCountry(id, pageable);
+
+        return ResponseFactory.ok("Works from country retrieved successfully", PageMapper.toDTO(workResponseDTOS));
     }
 
     @Operation(summary = "Search countries", description = "Search for countries by name")
@@ -80,10 +101,8 @@ public class CountryController {
     public ResponseEntity<ApiResponse<CountryResponseDTO>> createCountry(@RequestBody CountryRequestDTO dto) {
         Country created = countryService.createCountry(dto);
         CountryResponseDTO responseDTO = CountryMapper.toDTO(created);
-        return new ResponseEntity<>(
-                new ApiResponse<>(true, "Country created successfully", responseDTO),
-                HttpStatus.CREATED
-        );
+
+        return ResponseFactory.created("Country created successfully", responseDTO);
     }
 
     @Operation(summary = "Update country", description = "Updates the details of an existing country by its ID")
@@ -94,10 +113,8 @@ public class CountryController {
     ) {
         Country updated = countryService.updateCountry(id, dto);
         CountryResponseDTO responseDTO = CountryMapper.toDTO(updated);
-        return new ResponseEntity<>(
-                new ApiResponse<>(true, "Country updated successfully", responseDTO),
-                HttpStatus.OK
-        );
+
+        return ResponseFactory.ok("Country updated successfully", responseDTO);
     }
 
     @Operation(summary = "Delete country", description = "Deletes an existing country by its ID")
@@ -105,9 +122,7 @@ public class CountryController {
     public ResponseEntity<ApiResponse<CountryResponseDTO>> deleteCountryById(@PathVariable Long id) {
         Country deleted = countryService.deleteCountryById(id);
         CountryResponseDTO responseDTO = CountryMapper.toDTO(deleted);
-        return new ResponseEntity<>(
-                new ApiResponse<>(true, "Country with id " + id + " deleted successfully", responseDTO),
-                HttpStatus.OK
-        );
+
+        return ResponseFactory.ok("Country with id " + id + " deleted successfully", responseDTO);
     }
 }
