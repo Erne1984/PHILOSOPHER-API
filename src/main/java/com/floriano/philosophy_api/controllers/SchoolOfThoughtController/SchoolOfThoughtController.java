@@ -3,7 +3,6 @@ package com.floriano.philosophy_api.controllers.SchoolOfThoughtController;
 import com.floriano.philosophy_api.dto.PageDTO.PageDTO;
 import com.floriano.philosophy_api.dto.SchoolOfThoughtDTO.SchoolOfThoughtRequestDTO;
 import com.floriano.philosophy_api.dto.SchoolOfThoughtDTO.SchoolOfThoughtResponseDTO;
-import com.floriano.philosophy_api.dto.ThemeDTO.ThemeResponseDTO;
 import com.floriano.philosophy_api.dto.WorkDTO.WorkResponseDTO;
 import com.floriano.philosophy_api.mapper.PageMapper;
 import com.floriano.philosophy_api.mapper.SchoolOfThoughtMapper;
@@ -18,7 +17,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,105 +32,107 @@ public class SchoolOfThoughtController {
         this.schoolOfThoughtService = schoolOfThoughtService;
     }
 
-    @Operation(summary = "Listar escolas filosóficas", description = "Retorna todas as escolas de pensamento registradas no sistema")
+    @Operation(summary = "Get all schools of thought", description = "Returns a paginated list of all schools of thought in the system")
     @GetMapping
-    public ResponseEntity<ApiResponse<PageDTO<SchoolOfThoughtResponseDTO>>> getSchoolsOfThought(@RequestParam(defaultValue = "0") int page,
-                                                                                      @RequestParam(defaultValue = "10") int size,
-                                                                                      @RequestParam(defaultValue = "id") String sortBy,
-                                                                                      @RequestParam(defaultValue = "asc") String order) {
+    public ResponseEntity<ApiResponse<PageDTO<SchoolOfThoughtResponseDTO>>> getSchoolsOfThought(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String order
+    ) {
         Sort.Direction direction = order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
-        Page<SchoolOfThoughtResponseDTO> schoolOfThoughtsPage = schoolOfThoughtService.getSchoolOfThoughts(pageable);
-
-        return ResponseFactory.ok("Schools list", PageMapper.toDTO(schoolOfThoughtsPage));
+        Page<SchoolOfThoughtResponseDTO> schoolsPage = schoolOfThoughtService.getSchoolOfThoughts(pageable);
+        return ResponseFactory.ok("Schools list retrieved successfully", PageMapper.toDTO(schoolsPage));
     }
 
-    @Operation(summary = "Buscar escola filosófica por ID", description = "Retorna os detalhes de uma escola de pensamento pelo seu ID")
+    @Operation(summary = "Get school of thought by ID", description = "Returns detailed information of a specific school of thought by its ID")
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<SchoolOfThoughtResponseDTO>> getSchoolOfThought(@PathVariable Long id) {
-        SchoolOfThoughtResponseDTO schoolOfThoughtResponseDTO = schoolOfThoughtService.getSchoolOfThought(id);
-        return ResponseFactory.ok("School found", schoolOfThoughtResponseDTO);
+        SchoolOfThoughtResponseDTO responseDTO = schoolOfThoughtService.getSchoolOfThought(id);
+        return ResponseFactory.ok("School found", responseDTO);
     }
 
-    @Operation(summary = "Listar filósofos de uma escola", description = "Retorna todos os filósofos associados a uma escola de pensamento")
+    @Operation(summary = "Get philosophers by school", description = "Returns all philosophers associated with a specific school of thought")
     @GetMapping("/{id}/philosophers")
     public ResponseEntity<ApiResponse<List<Philosopher>>> getPhilosophersBySchool(@PathVariable Long id) {
         List<Philosopher> philosophers = schoolOfThoughtService.getPhilosophersBySchool(id);
-        return ResponseFactory.ok("Philosophers from school", philosophers);
+        return ResponseFactory.ok("Philosophers from school retrieved successfully", philosophers);
     }
 
-    @Operation(summary = "Listar obras de uma escola", description = "Retorna todas as obras associadas a uma escola de pensamento")
+    @Operation(summary = "Get works by school", description = "Returns all works associated with a specific school of thought")
     @GetMapping("/{id}/works")
     public ResponseEntity<ApiResponse<List<Work>>> getWorksBySchool(@PathVariable Long id) {
         List<Work> works = schoolOfThoughtService.getWorksBySchool(id);
-        return ResponseFactory.ok("Works from school", works);
+        return ResponseFactory.ok("Works from school retrieved successfully", works);
     }
 
-    @Operation(summary = "Listar obras de uma escola", description = "Retorna todas as obras associadas a uma escola de pensamento")
+    @Operation(summary = "Search schools of thought", description = "Searches schools of thought by title")
     @GetMapping("/search")
-    public ResponseEntity<ApiResponse<PageDTO<SchoolOfThoughtResponseDTO>>> getWorksBySchool(@RequestParam(required = false) String title,
-                                                                                             @RequestParam(defaultValue = "0") int page,
-                                                                                             @RequestParam(defaultValue = "10") int size,
-                                                                                             @RequestParam(defaultValue = "id") String sortBy,
-                                                                                             @RequestParam(defaultValue = "asc") String order) {
+    public ResponseEntity<ApiResponse<PageDTO<SchoolOfThoughtResponseDTO>>> searchSchoolsOfThought(
+            @RequestParam(required = false) String title,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String order
+    ) {
         Sort.Direction direction = order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
-        Page<SchoolOfThoughtResponseDTO> worksPage = schoolOfThoughtService.searchSchoolOfThought(title, pageable);
-
-        return ResponseFactory.ok("School of Thought searched", PageMapper.toDTO(worksPage));
+        Page<SchoolOfThoughtResponseDTO> schoolsPage = schoolOfThoughtService.searchSchoolOfThought(title, pageable);
+        return ResponseFactory.ok("Schools of thought searched successfully", PageMapper.toDTO(schoolsPage));
     }
 
-    @Operation(summary = "Associar filósofo a uma escola", description = "Adiciona um filósofo a uma escola de pensamento existente")
+    @Operation(summary = "Associate philosopher to school", description = "Adds a philosopher to an existing school of thought")
     @PostMapping("/{schoolId}/philosophers/{philosopherId}")
     public ResponseEntity<ApiResponse<Void>> addPhilosopherToSchool(@PathVariable Long schoolId, @PathVariable Long philosopherId) {
         schoolOfThoughtService.addPhilosopherToSchool(schoolId, philosopherId);
         return ResponseFactory.ok("Philosopher associated to school successfully", null);
     }
 
-    @Operation(summary = "Desassociar filósofo de uma escola", description = "Remove um filósofo de uma escola de pensamento existente")
+    @Operation(summary = "Remove philosopher from school", description = "Removes a philosopher from an existing school of thought")
     @DeleteMapping("/{schoolId}/philosophers/{philosopherId}")
     public ResponseEntity<ApiResponse<Void>> removePhilosopherFromSchool(@PathVariable Long schoolId, @PathVariable Long philosopherId) {
         schoolOfThoughtService.removePhilosopherFromSchool(schoolId, philosopherId);
         return ResponseFactory.ok("Philosopher removed from school successfully", null);
     }
 
-    @Operation(summary = "Associar obra a uma escola", description = "Adiciona uma obra a uma escola de pensamento existente")
+    @Operation(summary = "Associate work to school", description = "Adds a work to an existing school of thought")
     @PostMapping("/{schoolId}/works/{workId}")
     public ResponseEntity<ApiResponse<Void>> addWorkToSchool(@PathVariable Long schoolId, @PathVariable Long workId) {
         schoolOfThoughtService.addWorkToSchool(schoolId, workId);
         return ResponseFactory.ok("Work associated to school successfully", null);
     }
 
-    @Operation(summary = "Desassociar obra de uma escola", description = "Remove uma obra de uma escola de pensamento existente")
+    @Operation(summary = "Remove work from school", description = "Removes a work from an existing school of thought")
     @DeleteMapping("/{schoolId}/works/{workId}")
     public ResponseEntity<ApiResponse<Void>> removeWorkFromSchool(@PathVariable Long schoolId, @PathVariable Long workId) {
         schoolOfThoughtService.removeWorkFromSchool(schoolId, workId);
         return ResponseFactory.ok("Work removed from school successfully", null);
     }
 
-    @Operation(summary = "Criar escola filosófica", description = "Adiciona uma nova escola de pensamento ao sistema")
+    @Operation(summary = "Create school of thought", description = "Adds a new school of thought to the system")
     @PostMapping
     public ResponseEntity<ApiResponse<SchoolOfThoughtResponseDTO>> createSchoolOfThought(@RequestBody SchoolOfThoughtRequestDTO dto) {
         SchoolOfThought created = schoolOfThoughtService.createSchoolOfThought(dto);
         SchoolOfThoughtResponseDTO responseDTO = SchoolOfThoughtMapper.toDTO(created);
-        return ResponseFactory.created("Escola filosófica criada com sucesso", responseDTO);
+        return ResponseFactory.created("School of thought created successfully", responseDTO);
     }
 
-    @Operation(summary = "Atualizar escola filosófica", description = "Atualiza os dados de uma escola de pensamento existente pelo seu ID")
+    @Operation(summary = "Update school of thought", description = "Updates an existing school of thought by its ID")
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<SchoolOfThoughtResponseDTO>> updateSchoolOfThought(@PathVariable Long id, @RequestBody SchoolOfThoughtRequestDTO dto) {
-        SchoolOfThought schoolOfThought = schoolOfThoughtService.updateSchoolOfThought(id, dto);
-        SchoolOfThoughtResponseDTO response = SchoolOfThoughtMapper.toDTO(schoolOfThought);
-        return ResponseFactory.ok("School of thought updated successfully!", response);
+        SchoolOfThought updated = schoolOfThoughtService.updateSchoolOfThought(id, dto);
+        SchoolOfThoughtResponseDTO response = SchoolOfThoughtMapper.toDTO(updated);
+        return ResponseFactory.ok("School of thought updated successfully", response);
     }
 
-    @Operation(summary = "Deletar escola filosófica", description = "Remove uma escola de pensamento do sistema pelo seu ID")
+    @Operation(summary = "Delete school of thought", description = "Removes a school of thought from the system by its ID")
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<SchoolOfThoughtResponseDTO>> deleteSchoolOfThought(@PathVariable Long id) {
-        SchoolOfThought schoolOfThought = schoolOfThoughtService.deleteSchoolOfThought(id);
-        SchoolOfThoughtResponseDTO responseDTO = SchoolOfThoughtMapper.toDTO(schoolOfThought);
-        return ResponseFactory.ok("School of thought with id " + id + " successfully deleted!", responseDTO);
+        SchoolOfThought deleted = schoolOfThoughtService.deleteSchoolOfThought(id);
+        SchoolOfThoughtResponseDTO responseDTO = SchoolOfThoughtMapper.toDTO(deleted);
+        return ResponseFactory.ok("School of thought with id " + id + " deleted successfully", responseDTO);
     }
 }

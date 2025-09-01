@@ -5,10 +5,11 @@ import com.floriano.philosophy_api.dto.PageDTO.PageDTO;
 import com.floriano.philosophy_api.dto.PhilosopherDTO.PhilosopherRequestDTO;
 import com.floriano.philosophy_api.dto.PhilosopherDTO.PhilosopherResponseDTO;
 import com.floriano.philosophy_api.dto.QuoteDTO.QuoteResponseDTO;
-import com.floriano.philosophy_api.dto.ThemeDTO.ThemeResponseDTO;
 import com.floriano.philosophy_api.dto.WorkDTO.WorkResponseDTO;
 import com.floriano.philosophy_api.mapper.PageMapper;
 import com.floriano.philosophy_api.mapper.PhilosopherMapper;
+import com.floriano.philosophy_api.model.Influence.Influence;
+import com.floriano.philosophy_api.model.Influence.InfluenceStrength;
 import com.floriano.philosophy_api.model.Philosopher.Philosopher;
 import com.floriano.philosophy_api.payload.ApiResponse;
 import com.floriano.philosophy_api.payload.ResponseFactory;
@@ -34,7 +35,7 @@ public class PhilosopherController {
         this.philosopherService = philosopherService;
     }
 
-    @Operation(summary = "Listar todos os filósofos", description = "Retorna a lista completa de filósofos cadastrados")
+    @Operation(summary = "Get all philosophers", description = "Returns the complete list of registered philosophers")
     @GetMapping
     public ResponseEntity<ApiResponse<List<PhilosopherResponseDTO>>> getPhilosophers() {
         List<Philosopher> list = philosopherService.getAllPhilosophers();
@@ -42,95 +43,137 @@ public class PhilosopherController {
                 .map(PhilosopherMapper::toDTO)
                 .toList();
 
-        return ResponseEntity.ok(new ApiResponse<>(true, "Lista de filósofos", dtoList));
+        return ResponseEntity.ok(new ApiResponse<>(true, "Philosophers retrieved successfully", dtoList));
     }
 
-    @Operation(summary = "Buscar filósofo por ID", description = "Retorna as informações detalhadas de um filósofo pelo seu ID")
+    @Operation(summary = "Get philosopher by ID", description = "Returns detailed information of a philosopher by their ID")
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<PhilosopherResponseDTO>> getPhilosopherById(@PathVariable Long id) {
         Philosopher philosopher = philosopherService.getPhilosopherById(id);
         PhilosopherResponseDTO dto = PhilosopherMapper.toDTO(philosopher);
-        return ResponseEntity.ok(new ApiResponse<>(true, "Filósofo encontrado", dto));
+        return ResponseEntity.ok(new ApiResponse<>(true, "Philosopher found", dto));
     }
 
-    @Operation(summary = "Listar citações de um filósofo", description = "Retorna todas as citações atribuídas a um filósofo específico")
+    @Operation(summary = "Get quotes by philosopher", description = "Returns all quotes attributed to a specific philosopher")
     @GetMapping("/{id}/quotes")
     public ResponseEntity<ApiResponse<List<QuoteResponseDTO>>> getQuotesByPhilosopher(@PathVariable Long id) {
         List<QuoteResponseDTO> responseDTOS = philosopherService.getQuotesByPhilosopher(id);
 
         if (responseDTOS.isEmpty()) {
-            return new ResponseEntity<>(new ApiResponse<>(true, "Quotes not found", List.of()), HttpStatus.OK);
+            return ResponseEntity.ok(new ApiResponse<>(true, "No quotes found", List.of()));
         }
-        return new ResponseEntity<>(new ApiResponse<>(true, "Quotes of " + responseDTOS.get(0).getPhilosopherName() + " found", responseDTOS), HttpStatus.OK);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Quotes of " + responseDTOS.get(0).getPhilosopherName() + " found", responseDTOS));
     }
 
-    @Operation(summary = "Listar obras de um filósofo", description = "Retorna todas as obras escritas por um filósofo específico")
+    @Operation(summary = "Get works by philosopher", description = "Returns all works written by a specific philosopher")
     @GetMapping("/{id}/works")
     public ResponseEntity<ApiResponse<List<WorkResponseDTO>>> getWorksByPhilosopher(@PathVariable Long id) {
         List<WorkResponseDTO> workResponseDTOS = philosopherService.getWorksByPhilosopher(id);
 
         if (workResponseDTOS.isEmpty()) {
-            return new ResponseEntity<>(new ApiResponse<>(true, "No works from this philosopher", List.of()), HttpStatus.OK);
+            return ResponseEntity.ok(new ApiResponse<>(true, "No works found for this philosopher", List.of()));
         }
-        return new ResponseEntity<>(new ApiResponse<>(true, "Works of " + workResponseDTOS.get(0).getPhilosopherName() + " found", workResponseDTOS), HttpStatus.OK);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Works of " + workResponseDTOS.get(0).getPhilosopherName() + " found", workResponseDTOS));
     }
 
-    @Operation(summary = "Listar filósofos influenciados", description = "Retorna todos os filósofos que foram influenciados por um filósofo específico")
+    @Operation(summary = "Get influenced philosophers", description = "Returns all philosophers influenced by a specific philosopher")
     @GetMapping("/{id}/influenced")
     public ResponseEntity<ApiResponse<List<InfluenceResponseDTO>>> getInfluenced(@PathVariable Long id) {
         List<InfluenceResponseDTO> list = philosopherService.getInfluencedByPhilosopher(id);
-        return ResponseEntity.ok(new ApiResponse<>(true, "Influenced philosophers found", list));
+        return ResponseEntity.ok(new ApiResponse<>(true, "Influenced philosophers retrieved successfully", list));
     }
 
-    @Operation(summary = "Listar influenciadores de um filósofo", description = "Retorna todos os filósofos que influenciaram um filósofo específico")
+    @Operation(summary = "Get influencers of a philosopher", description = "Returns all philosophers who influenced a specific philosopher")
     @GetMapping("/{id}/influencers")
     public ResponseEntity<ApiResponse<List<InfluenceResponseDTO>>> getInfluencers(@PathVariable Long id) {
         List<InfluenceResponseDTO> list = philosopherService.getInfluencersOfPhilosopher(id);
-        return ResponseEntity.ok(new ApiResponse<>(true, "Influencers found", list));
+        return ResponseEntity.ok(new ApiResponse<>(true, "Influencers retrieved successfully", list));
     }
 
-    @Operation(summary = "Search Philosophers", description = "Searches for philosophers by name")
+    @Operation(summary = "Search philosophers", description = "Searches for philosophers by name, country, school, or birth year range")
     @GetMapping("/search")
-    public ResponseEntity<ApiResponse<PageDTO<PhilosopherResponseDTO>>> searchPhilosophers(@RequestParam(required = false) String name,
-                                                                                           @RequestParam(required = false) String countryName,
-                                                                                           @RequestParam(required = false) String schoolName,
-                                                                                           @RequestParam(required = false) Integer startYear,
-                                                                                           @RequestParam(required = false) Integer endYear,
-                                                                                           @RequestParam(defaultValue = "0") int page,
-                                                                                           @RequestParam(defaultValue = "10") int size,
-                                                                                           @RequestParam(defaultValue = "id") String sortBy,
-                                                                                           @RequestParam(defaultValue = "asc") String order) {
+    public ResponseEntity<ApiResponse<PageDTO<PhilosopherResponseDTO>>> searchPhilosophers(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String countryName,
+            @RequestParam(required = false) String schoolName,
+            @RequestParam(required = false) Integer startYear,
+            @RequestParam(required = false) Integer endYear,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String order
+    ) {
         Sort.Direction direction = order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
         Page<PhilosopherResponseDTO> philosophersPage = philosopherService.searchPhilosophers(name, countryName, schoolName, startYear, endYear, pageable);
 
-        return ResponseFactory.ok("Philosophers searched", PageMapper.toDTO(philosophersPage));
+        return ResponseFactory.ok("Philosophers retrieved successfully", PageMapper.toDTO(philosophersPage));
     }
 
-    @Operation(summary = "Criar filósofo", description = "Adiciona um novo filósofo ao sistema")
+    @Operation(summary = "Add theme to philosopher", description = "Associates a theme to a philosopher")
+    @PostMapping("/{philosopherId}/themes/{themeId}")
+    public ResponseEntity<ApiResponse<Void>> addThemeToPhilosopher(
+            @PathVariable Long philosopherId,
+            @PathVariable Long themeId
+    ) {
+        philosopherService.addThemeToPhilosopher(philosopherId, themeId);
+        return ResponseFactory.ok("Theme added to philosopher successfully", null);
+    }
+
+    @Operation(summary = "Remove theme from philosopher", description = "Removes the association between a theme and a philosopher")
+    @DeleteMapping("/{philosopherId}/themes/{themeId}")
+    public ResponseEntity<ApiResponse<Void>> removeThemeFromPhilosopher(
+            @PathVariable Long philosopherId,
+            @PathVariable Long themeId
+    ) {
+        philosopherService.removeThemeFromPhilosopher(philosopherId, themeId);
+        return ResponseFactory.ok("Theme removed from philosopher successfully", null);
+    }
+
+    @Operation(summary = "Add influence", description = "Adds a new influence relationship between two philosophers")
+    @PostMapping("/{influencerId}/influences/{influencedId}")
+    public InfluenceResponseDTO addInfluence(@PathVariable Long influencerId,
+                                             @PathVariable Long influencedId,
+                                             @RequestParam InfluenceStrength strength) {
+        Influence influence = philosopherService.addInfluence(influencerId, influencedId, strength);
+        return new InfluenceResponseDTO(
+                influence.getId(),
+                influence.getInfluencer().getName(),
+                influence.getInfluenced().getName(),
+                influence.getStrength().name()
+        );
+    }
+
+    @Operation(summary = "Remove influence", description = "Removes an influence relationship by its ID")
+    @DeleteMapping("/influences/{influenceId}")
+    public void removeInfluence(@PathVariable Long influenceId) {
+        philosopherService.removeInfluence(influenceId);
+    }
+
+    @Operation(summary = "Create philosopher", description = "Adds a new philosopher to the system")
     @PostMapping
     public ResponseEntity<ApiResponse<PhilosopherResponseDTO>> createPhilosopher(
             @RequestBody PhilosopherRequestDTO dto) {
 
         Philosopher created = philosopherService.createPhilosopher(dto);
         PhilosopherResponseDTO responseDto = PhilosopherMapper.toDTO(created);
-        return new ResponseEntity<>(new ApiResponse<>(true, "Filósofo criado com sucesso", responseDto), HttpStatus.CREATED);
+        return new ResponseEntity<>(new ApiResponse<>(true, "Philosopher created successfully", responseDto), HttpStatus.CREATED);
     }
 
-    @Operation(summary = "Atualizar filósofo", description = "Atualiza as informações de um filósofo existente pelo seu ID")
+    @Operation(summary = "Update philosopher", description = "Updates an existing philosopher by ID")
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<PhilosopherResponseDTO>> updatePhilosopher(@PathVariable Long id, @RequestBody PhilosopherRequestDTO dto) {
         Philosopher updated = philosopherService.updatePhilosopher(id, dto);
         PhilosopherResponseDTO responseDTO = PhilosopherMapper.toDTO(updated);
-        return new ResponseEntity<>(new ApiResponse<>(true, "Philosopher updated successfully!!", responseDTO), HttpStatus.OK);
+        return new ResponseEntity<>(new ApiResponse<>(true, "Philosopher updated successfully", responseDTO), HttpStatus.OK);
     }
 
-    @Operation(summary = "Deletar filósofo", description = "Remove um filósofo do sistema pelo seu ID")
+    @Operation(summary = "Delete philosopher", description = "Removes a philosopher from the system by ID")
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<PhilosopherResponseDTO>> deletePhilosopher(@PathVariable Long id) {
         Philosopher deleted = philosopherService.deletePhilosopher(id);
         PhilosopherResponseDTO responseDTO = PhilosopherMapper.toDTO(deleted);
-        return new ResponseEntity<>(new ApiResponse<>(true, "Philosopher deleted successfully!!", responseDTO), HttpStatus.OK);
+        return new ResponseEntity<>(new ApiResponse<>(true, "Philosopher deleted successfully", responseDTO), HttpStatus.OK);
     }
 }

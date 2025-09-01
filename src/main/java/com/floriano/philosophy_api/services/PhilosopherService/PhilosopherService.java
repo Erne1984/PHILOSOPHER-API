@@ -7,15 +7,19 @@ import com.floriano.philosophy_api.dto.QuoteDTO.QuoteResponseDTO;
 import com.floriano.philosophy_api.dto.WorkDTO.WorkResponseDTO;
 import com.floriano.philosophy_api.exceptions.PhilosopherAlreadyExistsException;
 import com.floriano.philosophy_api.exceptions.PhilosopherIdNotFoundException;
+import com.floriano.philosophy_api.exceptions.ThemeIdNotFoundException;
 import com.floriano.philosophy_api.mapper.PhilosopherMapper;
 import com.floriano.philosophy_api.mapper.QuoteMapper;
 import com.floriano.philosophy_api.mapper.WorkMapper;
 import com.floriano.philosophy_api.model.Country.Country;
 import com.floriano.philosophy_api.model.Influence.Influence;
+import com.floriano.philosophy_api.model.Influence.InfluenceStrength;
 import com.floriano.philosophy_api.model.Philosopher.Philosopher;
 import com.floriano.philosophy_api.model.Quote.Quote;
+import com.floriano.philosophy_api.model.Theme.Theme;
 import com.floriano.philosophy_api.model.Work.Work;
 import com.floriano.philosophy_api.repositories.CountryRepository.CountryRepository;
+import com.floriano.philosophy_api.repositories.InfluenceRepository.InfluenceRepository;
 import com.floriano.philosophy_api.repositories.PhilosopherRepository.PhilosopherRepository;
 import com.floriano.philosophy_api.repositories.QuoteRepository.QuoteRepository;
 import com.floriano.philosophy_api.repositories.SchoolOfThoughtRepository.SchoolOfThoughtRepository;
@@ -42,19 +46,22 @@ public class PhilosopherService {
     private final SchoolOfThoughtRepository schoolOfThoughtRepository;
     private final ThemeRepository themeRepository;
     private final WorkRepository workRepository;
+    private final InfluenceRepository influenceRepository;
 
     public PhilosopherService(PhilosopherRepository philosopherRepository,
                               CountryRepository countryRepository,
                               QuoteRepository quoteRepository,
                               SchoolOfThoughtRepository schoolOfThoughtRepository,
                               ThemeRepository themeRepository,
-                              WorkRepository workRepository) {
+                              WorkRepository workRepository,
+                              InfluenceRepository influenceRepository) {
         this.philosopherRepository = philosopherRepository;
         this.countryRepository = countryRepository;
         this.quoteRepository = quoteRepository;
         this.schoolOfThoughtRepository = schoolOfThoughtRepository;
         this.themeRepository = themeRepository;
         this.workRepository = workRepository;
+        this.influenceRepository = influenceRepository;
     }
 
     public List<Philosopher> getAllPhilosophers() {
@@ -132,6 +139,48 @@ public class PhilosopherService {
                 .and(PhilosopherSpecification.bornBeforeThanOrEqualTo(endYear));
 
         return philosopherRepository.findAll(spec, pageable).map(PhilosopherMapper::toDTO);
+    }
+
+    public void addThemeToPhilosopher(Long philosopherId, Long themeId) {
+        Philosopher philosopher = philosopherRepository.findById(philosopherId)
+                .orElseThrow(() -> new PhilosopherIdNotFoundException("Philosopher not found!"));
+        Theme theme = themeRepository.findById(themeId)
+                .orElseThrow(() -> new ThemeIdNotFoundException("Theme not found!"));
+
+        philosopher.addTheme(theme);
+        philosopherRepository.save(philosopher);
+    }
+
+    public void removeThemeFromPhilosopher(Long philosopherId, Long themeId) {
+        Philosopher philosopher = philosopherRepository.findById(philosopherId)
+                .orElseThrow(() -> new PhilosopherIdNotFoundException("Philosopher not found!"));
+        Theme theme = themeRepository.findById(themeId)
+                .orElseThrow(() -> new ThemeIdNotFoundException("Theme not found!"));
+
+        philosopher.removeTheme(theme);
+        philosopherRepository.save(philosopher);
+    }
+
+    public Influence addInfluence(Long influencerId, Long influencedId, InfluenceStrength strength) {
+        Philosopher influencer = philosopherRepository.findById(influencerId)
+                .orElseThrow(() -> new PhilosopherIdNotFoundException("Influencer not found!"));
+        Philosopher influenced = philosopherRepository.findById(influencedId)
+                .orElseThrow(() -> new PhilosopherIdNotFoundException("Influenced philosopher not found!"));
+
+        Influence influence = new Influence();
+        influence.setId(null);
+        influence.setInfluencer(influencer);
+        influence.setInfluenced(influenced);
+        influence.setStrength(strength);
+
+        return influenceRepository.save(influence);
+    }
+
+    public void removeInfluence(Long influenceId) {
+        if (!influenceRepository.existsById(influenceId)) {
+            throw new IllegalArgumentException("Influence with ID " + influenceId + " not found!");
+        }
+        influenceRepository.deleteById(influenceId);
     }
 
     public Philosopher createPhilosopher(PhilosopherRequestDTO dto) {
