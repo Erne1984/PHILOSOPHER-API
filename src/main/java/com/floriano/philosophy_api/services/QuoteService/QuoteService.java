@@ -55,6 +55,11 @@ public class QuoteService {
         return QuoteMapper.toDTO(quote);
     }
 
+    public QuoteResponseDTO getRandomQuote() {
+        Quote quote = quoteRepository.findRandomQuote();
+        return QuoteMapper.toDTO(quote);
+    }
+
     public Page<QuoteResponseDTO> searchQuotes(String content, Pageable pageable) {
         Specification<Quote> spec = QuoteSpecification.hasContent(content);
 

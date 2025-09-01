@@ -51,16 +51,16 @@ public class SchoolOfThoughtService {
         return SchoolOfThoughtMapper.toDTO(schoolOfThought);
     }
 
-    public List<Philosopher> getPhilosophersBySchool(Long id) {
-        SchoolOfThought school = schoolOfThoughtRepository.findById(id)
+    public SchoolOfThought getSchoolOfThoughtById(Long id) {
+        return schoolOfThoughtRepository.findById(id)
                 .orElseThrow(() -> new SchoolOfThoghtNotFoundException("School not found"));
-        return school.getPhilosophers();
     }
 
-    public List<Work> getWorksBySchool(Long id) {
+    public  SchoolOfThought getWorksBySchool(Long id) {
         SchoolOfThought school = schoolOfThoughtRepository.findById(id)
                 .orElseThrow(() -> new SchoolOfThoghtNotFoundException("School not found"));
-        return school.getWorks();
+
+        return school;
     }
 
     public Page<SchoolOfThoughtResponseDTO> searchSchoolOfThought(String title, Pageable pageable) {

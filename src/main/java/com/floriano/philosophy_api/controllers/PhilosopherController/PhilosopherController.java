@@ -90,6 +90,13 @@ public class PhilosopherController {
         return ResponseEntity.ok(new ApiResponse<>(true, "Influencers retrieved successfully", list));
     }
 
+    @Operation(summary = "Get random philosopher", description = "Returns detailed information of a random philosopher")
+    @GetMapping("/random")
+    public ResponseEntity<ApiResponse<PhilosopherResponseDTO>> getRandomPhilosopher() {
+        PhilosopherResponseDTO philosopherResponseDTO = philosopherService.getRandomPhilosopher();
+        return ResponseEntity.ok(new ApiResponse<>(true, "Random philosopher", philosopherResponseDTO));
+    }
+
     @Operation(summary = "Search philosophers", description = "Searches for philosophers by name, country, school, or birth year range")
     @GetMapping("/search")
     public ResponseEntity<ApiResponse<PageDTO<PhilosopherResponseDTO>>> searchPhilosophers(

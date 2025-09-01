@@ -129,6 +129,11 @@ public class PhilosopherService {
                 .toList();
     }
 
+    public PhilosopherResponseDTO getRandomPhilosopher() {
+        Philosopher philosopher = philosopherRepository.findRandomPhilosopher();
+        return PhilosopherMapper.toDTO(philosopher);
+    }
+
     public Page<PhilosopherResponseDTO> searchPhilosophers(String name, String countryName, String schoolName, Integer startYear, Integer endYear, Pageable pageable) {
         Specification<Philosopher> spec = (root, query, cb) -> cb.conjunction();
 

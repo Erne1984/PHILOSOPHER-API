@@ -1,11 +1,14 @@
 package com.floriano.philosophy_api.controllers.SchoolOfThoughtController;
 
 import com.floriano.philosophy_api.dto.PageDTO.PageDTO;
+import com.floriano.philosophy_api.dto.PhilosopherDTO.PhilosopherResponseDTO;
 import com.floriano.philosophy_api.dto.SchoolOfThoughtDTO.SchoolOfThoughtRequestDTO;
 import com.floriano.philosophy_api.dto.SchoolOfThoughtDTO.SchoolOfThoughtResponseDTO;
 import com.floriano.philosophy_api.dto.WorkDTO.WorkResponseDTO;
 import com.floriano.philosophy_api.mapper.PageMapper;
+import com.floriano.philosophy_api.mapper.PhilosopherMapper;
 import com.floriano.philosophy_api.mapper.SchoolOfThoughtMapper;
+import com.floriano.philosophy_api.mapper.WorkMapper;
 import com.floriano.philosophy_api.model.Philosopher.Philosopher;
 import com.floriano.philosophy_api.model.SchoolOfThought.SchoolOfThought;
 import com.floriano.philosophy_api.model.Work.Work;
@@ -56,16 +59,27 @@ public class SchoolOfThoughtController {
 
     @Operation(summary = "Get philosophers by school", description = "Returns all philosophers associated with a specific school of thought")
     @GetMapping("/{id}/philosophers")
-    public ResponseEntity<ApiResponse<List<Philosopher>>> getPhilosophersBySchool(@PathVariable Long id) {
-        List<Philosopher> philosophers = schoolOfThoughtService.getPhilosophersBySchool(id);
-        return ResponseFactory.ok("Philosophers from school retrieved successfully", philosophers);
+    public ResponseEntity<ApiResponse<List<PhilosopherResponseDTO>>> getPhilosophersBySchool(@PathVariable Long id) {
+        SchoolOfThought school = schoolOfThoughtService.getSchoolOfThoughtById(id);
+
+        List<Philosopher> philosophers = school.getPhilosophers();
+        List<PhilosopherResponseDTO> dtos = philosophers.stream()
+                .map(PhilosopherMapper::toDTO)
+                .toList();
+
+        String message = "Philosophers from school '" + school.getName() + "' retrieved successfully";
+
+        return ResponseFactory.ok(message, dtos);
     }
 
     @Operation(summary = "Get works by school", description = "Returns all works associated with a specific school of thought")
     @GetMapping("/{id}/works")
-    public ResponseEntity<ApiResponse<List<Work>>> getWorksBySchool(@PathVariable Long id) {
-        List<Work> works = schoolOfThoughtService.getWorksBySchool(id);
-        return ResponseFactory.ok("Works from school retrieved successfully", works);
+    public ResponseEntity<ApiResponse<List<WorkResponseDTO>>> getWorksBySchool(@PathVariable Long id) {
+        SchoolOfThought school = schoolOfThoughtService.getWorksBySchool(id);
+
+        List<WorkResponseDTO> dtos = school.getWorks().stream().map(WorkMapper::toDTO).toList();
+
+        return ResponseFactory.ok("Works from school " + school.getName() + " retrieved successfully", dtos);
     }
 
     @Operation(summary = "Search schools of thought", description = "Searches schools of thought by title")

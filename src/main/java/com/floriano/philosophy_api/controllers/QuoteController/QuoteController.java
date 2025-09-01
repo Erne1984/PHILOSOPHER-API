@@ -53,6 +53,13 @@ public class QuoteController {
         return ResponseEntity.ok(new ApiResponse<>(true, "Quote found", quoteResponseDTO));
     }
 
+    @Operation(summary = "Get random quote", description = "Returns detailed information of a random quote")
+    @GetMapping("/random")
+    public ResponseEntity<ApiResponse<QuoteResponseDTO>> getRandomQuote() {
+        QuoteResponseDTO quoteResponseDTO = quoteService.getRandomQuote();
+        return ResponseEntity.ok(new ApiResponse<>(true, "Random quote", quoteResponseDTO));
+    }
+
     @Operation(summary = "Search quotes", description = "Searches for quotes by content")
     @GetMapping("/search")
     public ResponseEntity<ApiResponse<PageDTO<QuoteResponseDTO>>> searchQuotes(
