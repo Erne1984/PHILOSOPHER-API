@@ -19,11 +19,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/v1/philosophers")
@@ -100,10 +97,10 @@ public class PhilosopherController {
     @Operation(summary = "Get influenced philosophers", description = "Returns all philosophers influenced by a specific philosopher")
     @GetMapping("/{id}/influenced")
     public ResponseEntity<ApiResponse<PageDTO<InfluenceResponseDTO>>> getInfluenced(@PathVariable Long id,
-                                                                                 @RequestParam(defaultValue = "0") int page,
-                                                                                 @RequestParam(defaultValue = "10") int size,
-                                                                                 @RequestParam(defaultValue = "id") String sortBy,
-                                                                                 @RequestParam(defaultValue = "asc") String order) {
+                                                                                    @RequestParam(defaultValue = "0") int page,
+                                                                                    @RequestParam(defaultValue = "10") int size,
+                                                                                    @RequestParam(defaultValue = "id") String sortBy,
+                                                                                    @RequestParam(defaultValue = "asc") String order) {
         Sort.Direction direction = order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
@@ -115,10 +112,10 @@ public class PhilosopherController {
     @Operation(summary = "Get influencers of a philosopher", description = "Returns all philosophers who influenced a specific philosopher")
     @GetMapping("/{id}/influencers")
     public ResponseEntity<ApiResponse<PageDTO<InfluenceResponseDTO>>> getInfluencers(@PathVariable Long id,
-                                                                                  @RequestParam(defaultValue = "0") int page,
-                                                                                  @RequestParam(defaultValue = "10") int size,
-                                                                                  @RequestParam(defaultValue = "id") String sortBy,
-                                                                                  @RequestParam(defaultValue = "asc") String order) {
+                                                                                     @RequestParam(defaultValue = "0") int page,
+                                                                                     @RequestParam(defaultValue = "10") int size,
+                                                                                     @RequestParam(defaultValue = "id") String sortBy,
+                                                                                     @RequestParam(defaultValue = "asc") String order) {
         Sort.Direction direction = order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
@@ -131,7 +128,7 @@ public class PhilosopherController {
     @GetMapping("/random")
     public ResponseEntity<ApiResponse<PhilosopherResponseDTO>> getRandomPhilosopher() {
         PhilosopherResponseDTO philosopherResponseDTO = philosopherService.getRandomPhilosopher();
-        return ResponseEntity.ok(new ApiResponse<>(true, "Random philosopher", philosopherResponseDTO));
+        return ResponseFactory.ok("Random philosopher", philosopherResponseDTO);
     }
 
     @Operation(summary = "Search philosophers", description = "Searches for philosophers by name, country, school, or birth year range")
@@ -177,32 +174,37 @@ public class PhilosopherController {
 
     @Operation(summary = "Add influence", description = "Adds a new influence relationship between two philosophers")
     @PostMapping("/{influencerId}/influences/{influencedId}")
-    public InfluenceResponseDTO addInfluence(@PathVariable Long influencerId,
-                                             @PathVariable Long influencedId,
-                                             @RequestParam InfluenceStrength strength) {
+    public ResponseEntity<ApiResponse<InfluenceResponseDTO>> addInfluence(@PathVariable Long influencerId,
+                                                                          @PathVariable Long influencedId,
+                                                                          @RequestParam InfluenceStrength strength) {
         Influence influence = philosopherService.addInfluence(influencerId, influencedId, strength);
-        return new InfluenceResponseDTO(
+
+        InfluenceResponseDTO influenceResponseDTO = new InfluenceResponseDTO(
                 influence.getId(),
                 influence.getInfluencer().getName(),
                 influence.getInfluenced().getName(),
                 influence.getStrength().name()
         );
+
+        return ResponseFactory.ok("Theme removed from philosopher successfully", influenceResponseDTO);
     }
 
     @Operation(summary = "Remove influence", description = "Removes an influence relationship by its ID")
     @DeleteMapping("/influences/{influenceId}")
-    public void removeInfluence(@PathVariable Long influenceId) {
+    public ResponseEntity<ApiResponse<Void>> removeInfluence(@PathVariable Long influenceId) {
         philosopherService.removeInfluence(influenceId);
+
+        return ResponseFactory.ok("Influence removed from philosopher successfully", null);
     }
 
     @Operation(summary = "Create philosopher", description = "Adds a new philosopher to the system")
     @PostMapping
-    public ResponseEntity<ApiResponse<PhilosopherResponseDTO>> createPhilosopher(
-            @RequestBody PhilosopherRequestDTO dto) {
+    public ResponseEntity<ApiResponse<PhilosopherResponseDTO>> createPhilosopher(@RequestBody PhilosopherRequestDTO dto) {
 
         Philosopher created = philosopherService.createPhilosopher(dto);
         PhilosopherResponseDTO responseDto = PhilosopherMapper.toDTO(created);
-        return new ResponseEntity<>(new ApiResponse<>(true, "Philosopher created successfully", responseDto), HttpStatus.CREATED);
+
+        return ResponseFactory.created("Philosopher created successfully", responseDto);
     }
 
     @Operation(summary = "Update philosopher", description = "Updates an existing philosopher by ID")
@@ -210,7 +212,7 @@ public class PhilosopherController {
     public ResponseEntity<ApiResponse<PhilosopherResponseDTO>> updatePhilosopher(@PathVariable Long id, @RequestBody PhilosopherRequestDTO dto) {
         Philosopher updated = philosopherService.updatePhilosopher(id, dto);
         PhilosopherResponseDTO responseDTO = PhilosopherMapper.toDTO(updated);
-        return new ResponseEntity<>(new ApiResponse<>(true, "Philosopher updated successfully", responseDTO), HttpStatus.OK);
+        return ResponseFactory.ok("Philosopher updated successfully", responseDTO);
     }
 
     @Operation(summary = "Delete philosopher", description = "Removes a philosopher from the system by ID")
@@ -218,6 +220,6 @@ public class PhilosopherController {
     public ResponseEntity<ApiResponse<PhilosopherResponseDTO>> deletePhilosopher(@PathVariable Long id) {
         Philosopher deleted = philosopherService.deletePhilosopher(id);
         PhilosopherResponseDTO responseDTO = PhilosopherMapper.toDTO(deleted);
-        return new ResponseEntity<>(new ApiResponse<>(true, "Philosopher deleted successfully", responseDTO), HttpStatus.OK);
+        return ResponseFactory.ok("Philosopher deleted successfully", responseDTO);
     }
 }

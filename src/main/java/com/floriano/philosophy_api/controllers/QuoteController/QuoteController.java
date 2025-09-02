@@ -50,14 +50,14 @@ public class QuoteController {
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<QuoteResponseDTO>> getQuoteById(@PathVariable Long id) {
         QuoteResponseDTO quoteResponseDTO = quoteService.getQuoteById(id);
-        return ResponseEntity.ok(new ApiResponse<>(true, "Quote found", quoteResponseDTO));
+        return ResponseFactory.ok("Quote found", quoteResponseDTO);
     }
 
     @Operation(summary = "Get random quote", description = "Returns detailed information of a random quote")
     @GetMapping("/random")
     public ResponseEntity<ApiResponse<QuoteResponseDTO>> getRandomQuote() {
         QuoteResponseDTO quoteResponseDTO = quoteService.getRandomQuote();
-        return ResponseEntity.ok(new ApiResponse<>(true, "Random quote", quoteResponseDTO));
+        return ResponseFactory.ok("Random quote", quoteResponseDTO);
     }
 
     @Operation(summary = "Search quotes", description = "Searches for quotes by content")
@@ -102,21 +102,21 @@ public class QuoteController {
     public ResponseEntity<ApiResponse<QuoteResponseDTO>> createQuote(@RequestBody QuoteRequestDTO dto) {
         Quote created = quoteService.createQuote(dto);
         QuoteResponseDTO responseDTO = QuoteMapper.toDTO(created);
-        return new ResponseEntity<>(new ApiResponse<>(true, "Quote created successfully", responseDTO), HttpStatus.CREATED);
+        return ResponseFactory.created("Quote created successfully", responseDTO);
     }
 
     @Operation(summary = "Update quote", description = "Updates an existing quote by its ID")
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<QuoteResponseDTO>> updateQuote(@PathVariable Long id, @RequestBody QuoteRequestDTO dto) {
         Quote updated = quoteService.updateQuote(id, dto);
-        QuoteResponseDTO response = QuoteMapper.toDTO(updated);
-        return new ResponseEntity<>(new ApiResponse<>(true, "Quote updated successfully", response), HttpStatus.OK);
+        QuoteResponseDTO responseDTO = QuoteMapper.toDTO(updated);
+        return ResponseFactory.ok("Quote updated successfully", responseDTO);
     }
 
     @Operation(summary = "Delete quote", description = "Removes a quote from the system by its ID")
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<String>> deleteQuote(@PathVariable Long id){
         quoteService.deleteQuote(id);
-        return new ResponseEntity<>(new ApiResponse<>(true, "Quote with id " + id + " deleted successfully", null), HttpStatus.OK);
+        return ResponseFactory.ok("Quote with id " + id + " deleted successfully", null);
     }
 }
