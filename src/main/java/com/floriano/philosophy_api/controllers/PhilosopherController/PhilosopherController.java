@@ -51,7 +51,7 @@ public class PhilosopherController {
     public ResponseEntity<ApiResponse<PhilosopherResponseDTO>> getPhilosopherById(@PathVariable Long id) {
         Philosopher philosopher = philosopherService.getPhilosopherById(id);
         PhilosopherResponseDTO dto = PhilosopherMapper.toDTO(philosopher);
-        return ResponseEntity.ok(new ApiResponse<>(true, "Philosopher found", dto));
+        return ResponseFactory.ok("Philosopher found", dto);
     }
 
     @Operation(summary = "Get quotes by philosopher", description = "Returns all quotes attributed to a specific philosopher")

@@ -57,9 +57,13 @@ public class WorkController {
     public ResponseEntity<ApiResponse<PageDTO<QuoteResponseDTO>>> getQuotesByWork(
             @PathVariable Long id,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String order
     ) {
-        Pageable pageable = PageRequest.of(page, size);
+        Sort.Direction direction = order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+
         Page<QuoteResponseDTO> quotesPage = workService.getQuotesByWork(id, pageable);
 
         return ResponseFactory.ok("Quotes list", PageMapper.toDTO(quotesPage));
@@ -70,9 +74,13 @@ public class WorkController {
     public ResponseEntity<ApiResponse<PageDTO<ThemeResponseDTO>>> getThemesByWork(
             @PathVariable Long id,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String order
     ) {
-        Pageable pageable = PageRequest.of(page, size);
+        Sort.Direction direction = order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+
         Page<ThemeResponseDTO> themePage = workService.getThemesByWork(id, pageable);
 
         return ResponseFactory.ok("Theme list", PageMapper.toDTO(themePage));

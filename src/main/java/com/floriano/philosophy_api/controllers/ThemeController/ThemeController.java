@@ -126,7 +126,7 @@ public class ThemeController {
     public ResponseEntity<ApiResponse<ThemeResponseDTO>> createTheme(@RequestBody ThemeRequestDTO dto) {
         Theme created = themeService.createTheme(dto);
         ThemeResponseDTO response = ThemeMapper.toDTO(created);
-        return ResponseFactory.ok("Theme created successfully", response);
+        return ResponseFactory.created("Theme created successfully", response);
     }
 
     @Operation(summary = "Update theme", description = "Updates an existing theme by its ID")
