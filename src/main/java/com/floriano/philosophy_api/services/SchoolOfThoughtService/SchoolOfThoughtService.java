@@ -1,10 +1,12 @@
 package com.floriano.philosophy_api.services.SchoolOfThoughtService;
 
+import com.floriano.philosophy_api.dto.PhilosopherDTO.PhilosopherResponseDTO;
 import com.floriano.philosophy_api.dto.SchoolOfThoughtDTO.SchoolOfThoughtRequestDTO;
 import com.floriano.philosophy_api.dto.SchoolOfThoughtDTO.SchoolOfThoughtResponseDTO;
 import com.floriano.philosophy_api.dto.ThemeDTO.ThemeResponseDTO;
 import com.floriano.philosophy_api.dto.WorkDTO.WorkResponseDTO;
 import com.floriano.philosophy_api.exceptions.SchoolOfThoghtNotFoundException;
+import com.floriano.philosophy_api.mapper.PhilosopherMapper;
 import com.floriano.philosophy_api.mapper.SchoolOfThoughtMapper;
 import com.floriano.philosophy_api.mapper.WorkMapper;
 import com.floriano.philosophy_api.model.Philosopher.Philosopher;
@@ -18,6 +20,7 @@ import com.floriano.philosophy_api.services.SchoolOfThoughtService.utils.SchoolO
 import com.floriano.philosophy_api.specification.SchoolOfThoughtSpecification;
 import com.floriano.philosophy_api.specification.WorkSpecification;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -56,11 +59,34 @@ public class SchoolOfThoughtService {
                 .orElseThrow(() -> new SchoolOfThoghtNotFoundException("School not found"));
     }
 
-    public  SchoolOfThought getWorksBySchool(Long id) {
+    public Page<PhilosopherResponseDTO> getPhilosophersBySchool(Long id, Pageable pageable) {
         SchoolOfThought school = schoolOfThoughtRepository.findById(id)
                 .orElseThrow(() -> new SchoolOfThoghtNotFoundException("School not found"));
 
-        return school;
+        List<PhilosopherResponseDTO> dtos = school.getPhilosophers().stream()
+                .map(PhilosopherMapper::toDTO)
+                .toList();
+
+        int start = (int) pageable.getOffset();
+        int end = Math.min(start + pageable.getPageSize(), dtos.size());
+        List<PhilosopherResponseDTO> paged = dtos.subList(start, end);
+
+        return new PageImpl<>(paged, pageable, dtos.size());
+    }
+
+    public Page<WorkResponseDTO> getWorksBySchool(Long id, Pageable pageable) {
+        SchoolOfThought school = schoolOfThoughtRepository.findById(id)
+                .orElseThrow(() -> new SchoolOfThoghtNotFoundException("School not found"));
+
+        List<WorkResponseDTO> dtos = school.getWorks().stream()
+                .map(WorkMapper::toDTO)
+                .toList();
+
+        int start = (int) pageable.getOffset();
+        int end = Math.min(start + pageable.getPageSize(), dtos.size());
+        List<WorkResponseDTO> paged = dtos.subList(start, end);
+
+        return new PageImpl<>(paged, pageable, dtos.size());
     }
 
     public Page<SchoolOfThoughtResponseDTO> searchSchoolOfThought(String title, Pageable pageable) {

@@ -37,11 +37,10 @@ public class SchoolOfThoughtController {
 
     @Operation(summary = "Get all schools of thought", description = "Returns a paginated list of all schools of thought in the system")
     @GetMapping
-    public ResponseEntity<ApiResponse<PageDTO<SchoolOfThoughtResponseDTO>>> getSchoolsOfThought(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "asc") String order
+    public ResponseEntity<ApiResponse<PageDTO<SchoolOfThoughtResponseDTO>>> getSchoolsOfThought(@RequestParam(defaultValue = "0") int page,
+                                                                                                @RequestParam(defaultValue = "10") int size,
+                                                                                                @RequestParam(defaultValue = "id") String sortBy,
+                                                                                                @RequestParam(defaultValue = "asc") String order
     ) {
         Sort.Direction direction = order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
@@ -57,29 +56,39 @@ public class SchoolOfThoughtController {
         return ResponseFactory.ok("School found", responseDTO);
     }
 
-    @Operation(summary = "Get philosophers by school", description = "Returns all philosophers associated with a specific school of thought")
+    @Operation(summary = "Get philosophers by school", description = "Returns philosophers associated with a specific school of thought (paginated)")
     @GetMapping("/{id}/philosophers")
-    public ResponseEntity<ApiResponse<List<PhilosopherResponseDTO>>> getPhilosophersBySchool(@PathVariable Long id) {
-        SchoolOfThought school = schoolOfThoughtService.getSchoolOfThoughtById(id);
+    public ResponseEntity<ApiResponse<PageDTO<PhilosopherResponseDTO>>> getPhilosophersBySchool(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String order) {
 
-        List<Philosopher> philosophers = school.getPhilosophers();
-        List<PhilosopherResponseDTO> dtos = philosophers.stream()
-                .map(PhilosopherMapper::toDTO)
-                .toList();
+        Sort.Direction direction = order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
-        String message = "Philosophers from school '" + school.getName() + "' retrieved successfully";
+        Page<PhilosopherResponseDTO> philosophersPage = schoolOfThoughtService.getPhilosophersBySchool(id, pageable);
 
-        return ResponseFactory.ok(message, dtos);
+        String message = "Philosophers from school retrieved successfully";
+        return ResponseFactory.ok(message, PageMapper.toDTO(philosophersPage));
     }
 
-    @Operation(summary = "Get works by school", description = "Returns all works associated with a specific school of thought")
+    @Operation(summary = "Get works by school", description = "Returns works associated with a specific school of thought (paginated)")
     @GetMapping("/{id}/works")
-    public ResponseEntity<ApiResponse<List<WorkResponseDTO>>> getWorksBySchool(@PathVariable Long id) {
-        SchoolOfThought school = schoolOfThoughtService.getWorksBySchool(id);
+    public ResponseEntity<ApiResponse<PageDTO<WorkResponseDTO>>> getWorksBySchool(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String order) {
 
-        List<WorkResponseDTO> dtos = school.getWorks().stream().map(WorkMapper::toDTO).toList();
+        Sort.Direction direction = order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
-        return ResponseFactory.ok("Works from school " + school.getName() + " retrieved successfully", dtos);
+        Page<WorkResponseDTO> worksPage = schoolOfThoughtService.getWorksBySchool(id, pageable);
+
+        return ResponseFactory.ok("Works from school retrieved successfully", PageMapper.toDTO(worksPage));
     }
 
     @Operation(summary = "Search schools of thought", description = "Searches schools of thought by title")
