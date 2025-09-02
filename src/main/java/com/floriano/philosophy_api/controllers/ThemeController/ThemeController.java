@@ -51,9 +51,13 @@ public class ThemeController {
     public ResponseEntity<ApiResponse<PageDTO<PhilosopherResponseDTO>>> getPhilosophersByTheme(
             @PathVariable Long id,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String order
     ) {
-        Pageable pageable = PageRequest.of(page, size);
+        Sort.Direction direction = order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+
         Page<PhilosopherResponseDTO> philosophersPage = themeService.getPhilosophersByTheme(id, pageable);
 
         return ResponseFactory.ok("Philosophers list retrieved successfully", PageMapper.toDTO(philosophersPage));
@@ -64,9 +68,13 @@ public class ThemeController {
     public ResponseEntity<ApiResponse<PageDTO<WorkResponseDTO>>> getWorksByTheme(
             @PathVariable Long id,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String order
     ) {
-        Pageable pageable = PageRequest.of(page, size);
+        Sort.Direction direction = order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+
         Page<WorkResponseDTO> worksPage = themeService.getWorksByTheme(id, pageable);
 
         return ResponseFactory.ok("Works list retrieved successfully", PageMapper.toDTO(worksPage));
@@ -77,9 +85,13 @@ public class ThemeController {
     public ResponseEntity<ApiResponse<PageDTO<QuoteResponseDTO>>> getQuotesByTheme(
             @PathVariable Long id,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String order
     ) {
-        Pageable pageable = PageRequest.of(page, size);
+        Sort.Direction direction = order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+
         Page<QuoteResponseDTO> quotesPage = themeService.getQuotesByTheme(id, pageable);
 
         return ResponseFactory.ok("Quotes list retrieved successfully", PageMapper.toDTO(quotesPage));
