@@ -37,13 +37,16 @@ public class PhilosopherController {
 
     @Operation(summary = "Get all philosophers", description = "Returns the complete list of registered philosophers")
     @GetMapping
-    public ResponseEntity<ApiResponse<List<PhilosopherResponseDTO>>> getPhilosophers() {
-        List<Philosopher> list = philosopherService.getAllPhilosophers();
-        List<PhilosopherResponseDTO> dtoList = list.stream()
-                .map(PhilosopherMapper::toDTO)
-                .toList();
+    public ResponseEntity<ApiResponse<PageDTO<PhilosopherResponseDTO>>> getPhilosophers(@RequestParam(defaultValue = "0") int page,
+                                                                                        @RequestParam(defaultValue = "10") int size,
+                                                                                        @RequestParam(defaultValue = "id") String sortBy,
+                                                                                        @RequestParam(defaultValue = "asc") String order) {
+        Sort.Direction direction = order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
-        return ResponseEntity.ok(new ApiResponse<>(true, "Philosophers retrieved successfully", dtoList));
+        Page<PhilosopherResponseDTO> philosophersPage = philosopherService.getAllPhilosophers(pageable);
+
+        return ResponseFactory.ok("Countries list retrieved successfully", PageMapper.toDTO(philosophersPage));
     }
 
     @Operation(summary = "Get philosopher by ID", description = "Returns detailed information of a philosopher by their ID")
@@ -56,38 +59,72 @@ public class PhilosopherController {
 
     @Operation(summary = "Get quotes by philosopher", description = "Returns all quotes attributed to a specific philosopher")
     @GetMapping("/{id}/quotes")
-    public ResponseEntity<ApiResponse<List<QuoteResponseDTO>>> getQuotesByPhilosopher(@PathVariable Long id) {
-        List<QuoteResponseDTO> responseDTOS = philosopherService.getQuotesByPhilosopher(id);
+    public ResponseEntity<ApiResponse<PageDTO<QuoteResponseDTO>>> getQuotesByPhilosopher(@PathVariable Long id,
+                                                                                         @RequestParam(defaultValue = "0") int page,
+                                                                                         @RequestParam(defaultValue = "10") int size,
+                                                                                         @RequestParam(defaultValue = "id") String sortBy,
+                                                                                         @RequestParam(defaultValue = "asc") String order) {
+        Sort.Direction direction = order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
-        if (responseDTOS.isEmpty()) {
-            return ResponseEntity.ok(new ApiResponse<>(true, "No quotes found", List.of()));
+        Page<QuoteResponseDTO> quotesPage = philosopherService.getQuotesByPhilosopher(id, pageable);
+
+        if (quotesPage.isEmpty()) {
+            PageDTO<QuoteResponseDTO> emptyPageDTO = PageMapper.toDTO(quotesPage);
+            return ResponseFactory.ok("No quotes found", emptyPageDTO);
         }
-        return ResponseEntity.ok(new ApiResponse<>(true, "Quotes of " + responseDTOS.get(0).getPhilosopherName() + " found", responseDTOS));
+
+        return ResponseFactory.ok("Quotes list retrieved successfully", PageMapper.toDTO(quotesPage));
     }
 
     @Operation(summary = "Get works by philosopher", description = "Returns all works written by a specific philosopher")
     @GetMapping("/{id}/works")
-    public ResponseEntity<ApiResponse<List<WorkResponseDTO>>> getWorksByPhilosopher(@PathVariable Long id) {
-        List<WorkResponseDTO> workResponseDTOS = philosopherService.getWorksByPhilosopher(id);
+    public ResponseEntity<ApiResponse<PageDTO<WorkResponseDTO>>> getWorksByPhilosopher(@PathVariable Long id,
+                                                                                       @RequestParam(defaultValue = "0") int page,
+                                                                                       @RequestParam(defaultValue = "10") int size,
+                                                                                       @RequestParam(defaultValue = "id") String sortBy,
+                                                                                       @RequestParam(defaultValue = "asc") String order) {
+        Sort.Direction direction = order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
 
-        if (workResponseDTOS.isEmpty()) {
-            return ResponseEntity.ok(new ApiResponse<>(true, "No works found for this philosopher", List.of()));
+        Page<WorkResponseDTO> worksPage = philosopherService.getWorksByPhilosopher(id, pageable);
+
+        if (worksPage.isEmpty()) {
+            PageDTO<WorkResponseDTO> emptyPageDTO = PageMapper.toDTO(worksPage);
+            return ResponseFactory.ok("No works found", emptyPageDTO);
         }
-        return ResponseEntity.ok(new ApiResponse<>(true, "Works of " + workResponseDTOS.get(0).getPhilosopherName() + " found", workResponseDTOS));
+
+        return ResponseFactory.ok("Works list retrieved successfully", PageMapper.toDTO(worksPage));
     }
 
     @Operation(summary = "Get influenced philosophers", description = "Returns all philosophers influenced by a specific philosopher")
     @GetMapping("/{id}/influenced")
-    public ResponseEntity<ApiResponse<List<InfluenceResponseDTO>>> getInfluenced(@PathVariable Long id) {
-        List<InfluenceResponseDTO> list = philosopherService.getInfluencedByPhilosopher(id);
-        return ResponseEntity.ok(new ApiResponse<>(true, "Influenced philosophers retrieved successfully", list));
+    public ResponseEntity<ApiResponse<PageDTO<InfluenceResponseDTO>>> getInfluenced(@PathVariable Long id,
+                                                                                 @RequestParam(defaultValue = "0") int page,
+                                                                                 @RequestParam(defaultValue = "10") int size,
+                                                                                 @RequestParam(defaultValue = "id") String sortBy,
+                                                                                 @RequestParam(defaultValue = "asc") String order) {
+        Sort.Direction direction = order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+
+        Page<InfluenceResponseDTO> list = philosopherService.getInfluencedByPhilosopher(id, pageable);
+
+        return ResponseFactory.ok("Influenced list retrieved successfully", PageMapper.toDTO(list));
     }
 
     @Operation(summary = "Get influencers of a philosopher", description = "Returns all philosophers who influenced a specific philosopher")
     @GetMapping("/{id}/influencers")
-    public ResponseEntity<ApiResponse<List<InfluenceResponseDTO>>> getInfluencers(@PathVariable Long id) {
-        List<InfluenceResponseDTO> list = philosopherService.getInfluencersOfPhilosopher(id);
-        return ResponseEntity.ok(new ApiResponse<>(true, "Influencers retrieved successfully", list));
+    public ResponseEntity<ApiResponse<PageDTO<InfluenceResponseDTO>>> getInfluencers(@PathVariable Long id,
+                                                                                  @RequestParam(defaultValue = "0") int page,
+                                                                                  @RequestParam(defaultValue = "10") int size,
+                                                                                  @RequestParam(defaultValue = "id") String sortBy,
+                                                                                  @RequestParam(defaultValue = "asc") String order) {
+        Sort.Direction direction = order.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
+
+        Page<InfluenceResponseDTO> list = philosopherService.getInfluencersOfPhilosopher(id, pageable);
+
+        return ResponseFactory.ok("Influencers list retrieved successfully", PageMapper.toDTO(list));
     }
 
     @Operation(summary = "Get random philosopher", description = "Returns detailed information of a random philosopher")

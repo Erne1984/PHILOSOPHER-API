@@ -13,6 +13,6 @@ import java.util.List;
 @Repository
 public interface WorkRepository extends JpaRepository<Work, Long>, JpaSpecificationExecutor<Work> {
 
-    List<Work> findByPhilosopherId(Long id);
+    Page<Work> findByPhilosopherId(Long id, Pageable pageable);
     Page<Work> findByCountryId(Long id, Pageable pageable);
 }

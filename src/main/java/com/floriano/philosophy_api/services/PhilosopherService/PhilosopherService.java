@@ -28,9 +28,8 @@ import com.floriano.philosophy_api.repositories.WorkRepository.WorkRepository;
 import com.floriano.philosophy_api.services.PhilosopherService.utils.PhilosopherDeleteHelper;
 import com.floriano.philosophy_api.services.PhilosopherService.utils.PhilosopherUpdateHelper;
 import com.floriano.philosophy_api.specification.PhilosopherSpecification;
-import com.floriano.philosophy_api.specification.QuoteSpecification;
-import com.floriano.philosophy_api.specification.WorkSpecification;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -64,8 +63,15 @@ public class PhilosopherService {
         this.influenceRepository = influenceRepository;
     }
 
-    public List<Philosopher> getAllPhilosophers() {
-        return philosopherRepository.findAll();
+    public Page<PhilosopherResponseDTO> getAllPhilosophers(Pageable pageable) {
+
+        Page<Philosopher> philosopherPage = philosopherRepository.findAll(pageable);
+
+        List<PhilosopherResponseDTO> dtos = philosopherPage.stream()
+                .map(PhilosopherMapper::toDTO)
+                .toList();
+
+        return new PageImpl<>(dtos, pageable, dtos.size());
     }
 
     public Philosopher getPhilosopherById(Long id) {
@@ -73,53 +79,54 @@ public class PhilosopherService {
                 .orElseThrow(() -> new PhilosopherIdNotFoundException("Filósofo com ID " + id + " não encontrado"));
     }
 
-    public List<QuoteResponseDTO> getQuotesByPhilosopher(Long id) {
-
+    public Page<QuoteResponseDTO> getQuotesByPhilosopher(Long id, Pageable pageable) {
         Philosopher philosopher = philosopherRepository.findById(id)
                 .orElseThrow(() -> new PhilosopherIdNotFoundException("Philosopher with ID " + id + " not found"));
 
-        List<Quote> quotes = quoteRepository.findByPhilosopherId(id);
+        Page<Quote> quotes = quoteRepository.findByPhilosopherId(id, pageable);
 
-        List<QuoteResponseDTO> quotesResponse = quotes.stream()
+        List<QuoteResponseDTO> dtos = quotes.stream()
                 .map(QuoteMapper::toDTO)
                 .toList();
 
-        return quotesResponse;
+        return new PageImpl<>(dtos, pageable, dtos.size());
     }
 
-    public List<WorkResponseDTO> getWorksByPhilosopher(Long id) {
+    public Page<WorkResponseDTO> getWorksByPhilosopher(Long id, Pageable pageable) {
 
         Philosopher philosopher = philosopherRepository.findById(id)
                 .orElseThrow(() -> new PhilosopherIdNotFoundException("Philosopher with ID " + id + " not found"));
 
-        List<Work> workList = workRepository.findByPhilosopherId(id);
+        Page<Work> workList = workRepository.findByPhilosopherId(id, pageable);
 
-        List<WorkResponseDTO> workResponseDTOS = workList.stream()
+        List<WorkResponseDTO> dtos = workList.stream()
                 .map(WorkMapper::toDTO)
                 .toList();
 
-        return workResponseDTOS;
+        return new PageImpl<>(dtos, pageable, dtos.size());
     }
 
-    public List<InfluenceResponseDTO> getInfluencedByPhilosopher(Long id) {
+    public Page<InfluenceResponseDTO> getInfluencedByPhilosopher(Long id, Pageable pageable) {
         Philosopher philosopher = philosopherRepository.findById(id)
                 .orElseThrow(() -> new PhilosopherIdNotFoundException("Philosopher with ID " + id + " not found"));
 
-        return philosopher.getInfluenced().stream()
+        List<InfluenceResponseDTO> dtos = philosopher.getInfluenced().stream()
                 .map(influence -> new InfluenceResponseDTO(
                         influence.getId(),
-                        philosopher.getName(), // influencer
-                        influence.getInfluenced().getName(), // influenced
+                        philosopher.getName(),
+                        influence.getInfluenced().getName(),
                         influence.getStrength().name()
                 ))
                 .toList();
+
+        return new PageImpl<>(dtos, pageable, dtos.size());
     }
 
-    public List<InfluenceResponseDTO> getInfluencersOfPhilosopher(Long id) {
+    public Page<InfluenceResponseDTO> getInfluencersOfPhilosopher(Long id, Pageable pageable) {
         Philosopher philosopher = philosopherRepository.findById(id)
                 .orElseThrow(() -> new PhilosopherIdNotFoundException("Philosopher with ID " + id + " not found"));
 
-        return philosopher.getInfluencedBy().stream()
+        List<InfluenceResponseDTO> dtos = philosopher.getInfluencedBy().stream()
                 .map(influence -> new InfluenceResponseDTO(
                         influence.getId(),
                         influence.getInfluencer().getName(), // influencer
@@ -127,6 +134,8 @@ public class PhilosopherService {
                         influence.getStrength().name()
                 ))
                 .toList();
+
+        return new PageImpl<>(dtos, pageable, dtos.size());
     }
 
     public PhilosopherResponseDTO getRandomPhilosopher() {
