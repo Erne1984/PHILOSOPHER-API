@@ -26,6 +26,7 @@ public class Work {
 
     private String title;
     private int year;
+    private String language;
 
     @Column(columnDefinition = "TEXT")
     private String summary;

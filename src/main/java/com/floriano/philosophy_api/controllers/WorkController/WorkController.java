@@ -12,6 +12,8 @@ import com.floriano.philosophy_api.payload.ApiResponse;
 import com.floriano.philosophy_api.payload.ResponseFactory;
 import com.floriano.philosophy_api.services.WorkService.WorkService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/v1/works")
+@Tag(name = "Works")
 public class WorkController {
 
     private final WorkService workService;
@@ -106,7 +109,7 @@ public class WorkController {
         return ResponseFactory.ok("Works searched", PageMapper.toDTO(worksPage));
     }
 
-    @Operation(summary = "Add theme to work", description = "Associates a theme to a work")
+    @Operation(summary = "Add theme to work", description = "Associates a theme to a work", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping("/{workId}/themes/{themeId}")
     public ResponseEntity<ApiResponse<Void>> addThemeToWork(
             @PathVariable Long workId,
@@ -116,7 +119,7 @@ public class WorkController {
         return ResponseFactory.ok("Theme added to work successfully", null);
     }
 
-    @Operation(summary = "Remove theme from work", description = "Removes association between a theme and a work")
+    @Operation(summary = "Remove theme from work", description = "Removes association between a theme and a work", security = @SecurityRequirement(name = "bearerAuth"))
     @DeleteMapping("/{workId}/themes/{themeId}")
     public ResponseEntity<ApiResponse<Void>> removeThemeFromWork(
             @PathVariable Long workId,
@@ -126,7 +129,7 @@ public class WorkController {
         return ResponseFactory.ok("Theme removed from work successfully", null);
     }
 
-    @Operation(summary = "Add school of thought to work", description = "Associates a school of thought to a work")
+    @Operation(summary = "Add school of thought to work", description = "Associates a school of thought to a work", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping("/{workId}/schools/{schoolId}")
     public ResponseEntity<ApiResponse<Void>> addSchoolToWork(
             @PathVariable Long workId,
@@ -136,7 +139,7 @@ public class WorkController {
         return ResponseFactory.ok("School of thought added to work successfully", null);
     }
 
-    @Operation(summary = "Remove school of thought from work", description = "Removes association between a school of thought and a work")
+    @Operation(summary = "Remove school of thought from work", description = "Removes association between a school of thought and a work", security = @SecurityRequirement(name = "bearerAuth"))
     @DeleteMapping("/{workId}/schools/{schoolId}")
     public ResponseEntity<ApiResponse<Void>> removeSchoolFromWork(
             @PathVariable Long workId,
@@ -147,7 +150,7 @@ public class WorkController {
     }
 
 
-    @Operation(summary = "Create work", description = "Adds a new work to the system")
+    @Operation(summary = "Create work", description = "Adds a new work to the system", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping
     public ResponseEntity<ApiResponse<WorkResponseDTO>> createWork(@RequestBody WorkRequestDTO dto) {
         Work created = workService.createWork(dto);
@@ -155,7 +158,7 @@ public class WorkController {
         return ResponseFactory.created("Work created successfully", response);
     }
 
-    @Operation(summary = "Update work", description = "Updates an existing work by its ID")
+    @Operation(summary = "Update work", description = "Updates an existing work by its ID", security = @SecurityRequirement(name = "bearerAuth"))
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<WorkResponseDTO>> updateWork(@PathVariable Long id, @RequestBody WorkRequestDTO dto) {
         Work updated = workService.updateWork(id, dto);
@@ -163,7 +166,7 @@ public class WorkController {
         return ResponseFactory.ok("Work updated successfully", response);
     }
 
-    @Operation(summary = "Delete work", description = "Removes a work from the system by its ID")
+    @Operation(summary = "Delete work", description = "Removes a work from the system by its ID", security = @SecurityRequirement(name = "bearerAuth"))
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<WorkResponseDTO>> deleteWork(@PathVariable Long id) {
         Work deleted = workService.deleteWork(id);

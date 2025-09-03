@@ -25,6 +25,8 @@ public class Quote {
     @Column(columnDefinition = "TEXT")
     private String content;
 
+    private String language;
+
     @ManyToOne
     private Philosopher philosopher;
 

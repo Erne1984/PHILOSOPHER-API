@@ -25,6 +25,7 @@ public class Country {
     private Integer startYear;
     private Integer endYear;
     private String region;
+    private String continent;
 
     @OneToMany(mappedBy = "country")
     private List<Philosopher> philosophers;

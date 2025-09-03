@@ -16,6 +16,8 @@ import com.floriano.philosophy_api.payload.ApiResponse;
 import com.floriano.philosophy_api.payload.ResponseFactory;
 import com.floriano.philosophy_api.services.SchoolOfThoughtService.SchoolOfThoughtService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +29,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/v1/schools")
+@Tag(name = "SchoolsOfThought")
 public class SchoolOfThoughtController {
 
     private final SchoolOfThoughtService schoolOfThoughtService;
@@ -107,35 +110,35 @@ public class SchoolOfThoughtController {
         return ResponseFactory.ok("Schools of thought searched successfully", PageMapper.toDTO(schoolsPage));
     }
 
-    @Operation(summary = "Associate philosopher to school", description = "Adds a philosopher to an existing school of thought")
+    @Operation(summary = "Associate philosopher to school", description = "Adds a philosopher to an existing school of thought", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping("/{schoolId}/philosophers/{philosopherId}")
     public ResponseEntity<ApiResponse<Void>> addPhilosopherToSchool(@PathVariable Long schoolId, @PathVariable Long philosopherId) {
         schoolOfThoughtService.addPhilosopherToSchool(schoolId, philosopherId);
         return ResponseFactory.ok("Philosopher associated to school successfully", null);
     }
 
-    @Operation(summary = "Remove philosopher from school", description = "Removes a philosopher from an existing school of thought")
+    @Operation(summary = "Remove philosopher from school", description = "Removes a philosopher from an existing school of thought", security = @SecurityRequirement(name = "bearerAuth"))
     @DeleteMapping("/{schoolId}/philosophers/{philosopherId}")
     public ResponseEntity<ApiResponse<Void>> removePhilosopherFromSchool(@PathVariable Long schoolId, @PathVariable Long philosopherId) {
         schoolOfThoughtService.removePhilosopherFromSchool(schoolId, philosopherId);
         return ResponseFactory.ok("Philosopher removed from school successfully", null);
     }
 
-    @Operation(summary = "Associate work to school", description = "Adds a work to an existing school of thought")
+    @Operation(summary = "Associate work to school", description = "Adds a work to an existing school of thought", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping("/{schoolId}/works/{workId}")
     public ResponseEntity<ApiResponse<Void>> addWorkToSchool(@PathVariable Long schoolId, @PathVariable Long workId) {
         schoolOfThoughtService.addWorkToSchool(schoolId, workId);
         return ResponseFactory.ok("Work associated to school successfully", null);
     }
 
-    @Operation(summary = "Remove work from school", description = "Removes a work from an existing school of thought")
+    @Operation(summary = "Remove work from school", description = "Removes a work from an existing school of thought", security = @SecurityRequirement(name = "bearerAuth"))
     @DeleteMapping("/{schoolId}/works/{workId}")
     public ResponseEntity<ApiResponse<Void>> removeWorkFromSchool(@PathVariable Long schoolId, @PathVariable Long workId) {
         schoolOfThoughtService.removeWorkFromSchool(schoolId, workId);
         return ResponseFactory.ok("Work removed from school successfully", null);
     }
 
-    @Operation(summary = "Create school of thought", description = "Adds a new school of thought to the system")
+    @Operation(summary = "Create school of thought", description = "Adds a new school of thought to the system", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping
     public ResponseEntity<ApiResponse<SchoolOfThoughtResponseDTO>> createSchoolOfThought(@RequestBody SchoolOfThoughtRequestDTO dto) {
         SchoolOfThought created = schoolOfThoughtService.createSchoolOfThought(dto);
@@ -143,7 +146,7 @@ public class SchoolOfThoughtController {
         return ResponseFactory.created("School of thought created successfully", responseDTO);
     }
 
-    @Operation(summary = "Update school of thought", description = "Updates an existing school of thought by its ID")
+    @Operation(summary = "Update school of thought", description = "Updates an existing school of thought by its ID", security = @SecurityRequirement(name = "bearerAuth"))
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<SchoolOfThoughtResponseDTO>> updateSchoolOfThought(@PathVariable Long id, @RequestBody SchoolOfThoughtRequestDTO dto) {
         SchoolOfThought updated = schoolOfThoughtService.updateSchoolOfThought(id, dto);
@@ -151,7 +154,7 @@ public class SchoolOfThoughtController {
         return ResponseFactory.ok("School of thought updated successfully", response);
     }
 
-    @Operation(summary = "Delete school of thought", description = "Removes a school of thought from the system by its ID")
+    @Operation(summary = "Delete school of thought", description = "Removes a school of thought from the system by its ID", security = @SecurityRequirement(name = "bearerAuth"))
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<SchoolOfThoughtResponseDTO>> deleteSchoolOfThought(@PathVariable Long id) {
         SchoolOfThought deleted = schoolOfThoughtService.deleteSchoolOfThought(id);

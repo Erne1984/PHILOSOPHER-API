@@ -15,6 +15,8 @@ import com.floriano.philosophy_api.payload.ApiResponse;
 import com.floriano.philosophy_api.payload.ResponseFactory;
 import com.floriano.philosophy_api.services.PhilosopherService.PhilosopherService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/v1/philosophers")
+@Tag(name = "Philosophers")
 public class PhilosopherController {
 
     private final PhilosopherService philosopherService;
@@ -152,7 +155,7 @@ public class PhilosopherController {
         return ResponseFactory.ok("Philosophers retrieved successfully", PageMapper.toDTO(philosophersPage));
     }
 
-    @Operation(summary = "Add theme to philosopher", description = "Associates a theme to a philosopher")
+    @Operation(summary = "Add theme to philosopher", description = "Associates a theme to a philosopher", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping("/{philosopherId}/themes/{themeId}")
     public ResponseEntity<ApiResponse<Void>> addThemeToPhilosopher(
             @PathVariable Long philosopherId,
@@ -162,7 +165,7 @@ public class PhilosopherController {
         return ResponseFactory.ok("Theme added to philosopher successfully", null);
     }
 
-    @Operation(summary = "Remove theme from philosopher", description = "Removes the association between a theme and a philosopher")
+    @Operation(summary = "Remove theme from philosopher", description = "Removes the association between a theme and a philosopher", security = @SecurityRequirement(name = "bearerAuth"))
     @DeleteMapping("/{philosopherId}/themes/{themeId}")
     public ResponseEntity<ApiResponse<Void>> removeThemeFromPhilosopher(
             @PathVariable Long philosopherId,
@@ -172,7 +175,7 @@ public class PhilosopherController {
         return ResponseFactory.ok("Theme removed from philosopher successfully", null);
     }
 
-    @Operation(summary = "Add influence", description = "Adds a new influence relationship between two philosophers")
+    @Operation(summary = "Add influence", description = "Adds a new influence relationship between two philosophers", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping("/{influencerId}/influences/{influencedId}")
     public ResponseEntity<ApiResponse<InfluenceResponseDTO>> addInfluence(@PathVariable Long influencerId,
                                                                           @PathVariable Long influencedId,
@@ -189,7 +192,7 @@ public class PhilosopherController {
         return ResponseFactory.ok("Theme removed from philosopher successfully", influenceResponseDTO);
     }
 
-    @Operation(summary = "Remove influence", description = "Removes an influence relationship by its ID")
+    @Operation(summary = "Remove influence", description = "Removes an influence relationship by its ID", security = @SecurityRequirement(name = "bearerAuth"))
     @DeleteMapping("/influences/{influenceId}")
     public ResponseEntity<ApiResponse<Void>> removeInfluence(@PathVariable Long influenceId) {
         philosopherService.removeInfluence(influenceId);
@@ -197,7 +200,7 @@ public class PhilosopherController {
         return ResponseFactory.ok("Influence removed from philosopher successfully", null);
     }
 
-    @Operation(summary = "Create philosopher", description = "Adds a new philosopher to the system")
+    @Operation(summary = "Create philosopher", description = "Adds a new philosopher to the system", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping
     public ResponseEntity<ApiResponse<PhilosopherResponseDTO>> createPhilosopher(@RequestBody PhilosopherRequestDTO dto) {
 
@@ -207,7 +210,7 @@ public class PhilosopherController {
         return ResponseFactory.created("Philosopher created successfully", responseDto);
     }
 
-    @Operation(summary = "Update philosopher", description = "Updates an existing philosopher by ID")
+    @Operation(summary = "Update philosopher", description = "Updates an existing philosopher by ID", security = @SecurityRequirement(name = "bearerAuth"))
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<PhilosopherResponseDTO>> updatePhilosopher(@PathVariable Long id, @RequestBody PhilosopherRequestDTO dto) {
         Philosopher updated = philosopherService.updatePhilosopher(id, dto);
@@ -215,7 +218,7 @@ public class PhilosopherController {
         return ResponseFactory.ok("Philosopher updated successfully", responseDTO);
     }
 
-    @Operation(summary = "Delete philosopher", description = "Removes a philosopher from the system by ID")
+    @Operation(summary = "Delete philosopher", description = "Removes a philosopher from the system by ID", security = @SecurityRequirement(name = "bearerAuth"))
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<PhilosopherResponseDTO>> deletePhilosopher(@PathVariable Long id) {
         Philosopher deleted = philosopherService.deletePhilosopher(id);

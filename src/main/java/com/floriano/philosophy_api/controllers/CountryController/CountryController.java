@@ -12,6 +12,8 @@ import com.floriano.philosophy_api.payload.ApiResponse;
 import com.floriano.philosophy_api.payload.ResponseFactory;
 import com.floriano.philosophy_api.services.CountryService.CountryService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/v1/countries")
+@Tag(name = "Countries")
 public class CountryController {
 
     private final CountryService countryService;
@@ -96,7 +99,7 @@ public class CountryController {
         return ResponseFactory.ok("Countries search executed successfully", PageMapper.toDTO(countriesPage));
     }
 
-    @Operation(summary = "Create country", description = "Creates a new country in the system")
+    @Operation(summary = "Create country", description = "Creates a new country in the system", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping
     public ResponseEntity<ApiResponse<CountryResponseDTO>> createCountry(@RequestBody CountryRequestDTO dto) {
         Country created = countryService.createCountry(dto);
@@ -105,7 +108,7 @@ public class CountryController {
         return ResponseFactory.created("Country created successfully", responseDTO);
     }
 
-    @Operation(summary = "Update country", description = "Updates the details of an existing country by its ID")
+    @Operation(summary = "Update country", description = "Updates the details of an existing country by its ID", security = @SecurityRequirement(name = "bearerAuth"))
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<CountryResponseDTO>> updateCountry(
             @PathVariable Long id,
@@ -117,7 +120,7 @@ public class CountryController {
         return ResponseFactory.ok("Country updated successfully", responseDTO);
     }
 
-    @Operation(summary = "Delete country", description = "Deletes an existing country by its ID")
+    @Operation(summary = "Delete country", description = "Deletes an existing country by its ID", security = @SecurityRequirement(name = "bearerAuth"))
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<CountryResponseDTO>> deleteCountryById(@PathVariable Long id) {
         Country deleted = countryService.deleteCountryById(id);

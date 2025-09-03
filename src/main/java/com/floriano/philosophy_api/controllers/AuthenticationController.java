@@ -8,6 +8,7 @@ import com.floriano.philosophy_api.infra.security.TokenService;
 import com.floriano.philosophy_api.model.User.UserRole;
 import com.floriano.philosophy_api.payload.ResponseFactory;
 import com.floriano.philosophy_api.repositories.UserRepository.UserRepository;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("auth")
+@Tag(name = "Authentications")
 public class AuthenticationController {
 
     @Autowired

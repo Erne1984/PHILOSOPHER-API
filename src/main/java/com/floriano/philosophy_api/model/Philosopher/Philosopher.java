@@ -31,13 +31,16 @@ public class Philosopher {
     private Integer birthYear;
     private Integer deathYear;
 
-    private String iepLink;
-    private String speLink;
+    private String iepLink; // Internet Encyclopedia of Philosophy if applied
+    private String speLink; // Stanford Encyclopedia of Philosophy if applied
 
     private String img;
 
     @Column(columnDefinition = "TEXT")
     private String bio;
+
+    private String era; // (Antiquity, Middle Ages, Modern, Contemporary)
+    private String mainIdeas;
 
     @ManyToOne
     private Country country;

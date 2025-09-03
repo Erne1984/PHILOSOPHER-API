@@ -13,6 +13,8 @@ import com.floriano.philosophy_api.payload.ApiResponse;
 import com.floriano.philosophy_api.payload.ResponseFactory;
 import com.floriano.philosophy_api.services.ThemeService.ThemeService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/v1/themes")
+@Tag(name = "Themes")
 public class ThemeController {
 
     private final ThemeService themeService;
@@ -121,7 +124,7 @@ public class ThemeController {
         return ResponseFactory.ok("Themes searched successfully", PageMapper.toDTO(themesPage));
     }
 
-    @Operation(summary = "Create theme", description = "Adds a new theme to the system")
+    @Operation(summary = "Create theme", description = "Adds a new theme to the system", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping
     public ResponseEntity<ApiResponse<ThemeResponseDTO>> createTheme(@RequestBody ThemeRequestDTO dto) {
         Theme created = themeService.createTheme(dto);
@@ -129,7 +132,7 @@ public class ThemeController {
         return ResponseFactory.created("Theme created successfully", response);
     }
 
-    @Operation(summary = "Update theme", description = "Updates an existing theme by its ID")
+    @Operation(summary = "Update theme", description = "Updates an existing theme by its ID", security = @SecurityRequirement(name = "bearerAuth"))
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<ThemeResponseDTO>> updateTheme(@PathVariable Long id, @RequestBody ThemeRequestDTO dto) {
         Theme updated = themeService.updateTheme(id, dto);
@@ -137,7 +140,7 @@ public class ThemeController {
         return ResponseFactory.ok("Theme updated successfully", response);
     }
 
-    @Operation(summary = "Delete theme", description = "Removes a theme from the system by its ID")
+    @Operation(summary = "Delete theme", description = "Removes a theme from the system by its ID", security = @SecurityRequirement(name = "bearerAuth"))
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<ThemeResponseDTO>> deleteTheme(@PathVariable Long id) {
         Theme deleted = themeService.deleteThemeById(id);

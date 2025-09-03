@@ -10,6 +10,8 @@ import com.floriano.philosophy_api.payload.ApiResponse;
 import com.floriano.philosophy_api.payload.ResponseFactory;
 import com.floriano.philosophy_api.services.QuoteService.QuoteService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +24,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/v1/quotes")
+@Tag(name = "Quotes")
 public class QuoteController {
 
     private final QuoteService quoteService;
@@ -77,7 +80,7 @@ public class QuoteController {
         return ResponseFactory.ok("Quotes searched successfully", PageMapper.toDTO(quotesPage));
     }
 
-    @Operation(summary = "Add theme to quote", description = "Associates a theme to a quote")
+    @Operation(summary = "Add theme to quote", description = "Associates a theme to a quote", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping("/{quoteId}/themes/{themeId}")
     public ResponseEntity<ApiResponse<Void>> addThemeToQuote(
             @PathVariable Long quoteId,
@@ -87,7 +90,7 @@ public class QuoteController {
         return ResponseFactory.ok("Theme added to quote successfully", null);
     }
 
-    @Operation(summary = "Remove theme from quote", description = "Removes the association between a theme and a quote")
+    @Operation(summary = "Remove theme from quote", description = "Removes the association between a theme and a quote", security = @SecurityRequirement(name = "bearerAuth"))
     @DeleteMapping("/{quoteId}/themes/{themeId}")
     public ResponseEntity<ApiResponse<Void>> removeThemeFromQuote(
             @PathVariable Long quoteId,
@@ -97,7 +100,7 @@ public class QuoteController {
         return ResponseFactory.ok("Theme removed from quote successfully", null);
     }
 
-    @Operation(summary = "Create quote", description = "Adds a new quote to the system")
+    @Operation(summary = "Create quote", description = "Adds a new quote to the system", security = @SecurityRequirement(name = "bearerAuth"))
     @PostMapping
     public ResponseEntity<ApiResponse<QuoteResponseDTO>> createQuote(@RequestBody QuoteRequestDTO dto) {
         Quote created = quoteService.createQuote(dto);
@@ -105,7 +108,7 @@ public class QuoteController {
         return ResponseFactory.created("Quote created successfully", responseDTO);
     }
 
-    @Operation(summary = "Update quote", description = "Updates an existing quote by its ID")
+    @Operation(summary = "Update quote", description = "Updates an existing quote by its ID", security = @SecurityRequirement(name = "bearerAuth"))
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<QuoteResponseDTO>> updateQuote(@PathVariable Long id, @RequestBody QuoteRequestDTO dto) {
         Quote updated = quoteService.updateQuote(id, dto);
@@ -113,7 +116,7 @@ public class QuoteController {
         return ResponseFactory.ok("Quote updated successfully", responseDTO);
     }
 
-    @Operation(summary = "Delete quote", description = "Removes a quote from the system by its ID")
+    @Operation(summary = "Delete quote", description = "Removes a quote from the system by its ID", security = @SecurityRequirement(name = "bearerAuth"))
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<String>> deleteQuote(@PathVariable Long id){
         quoteService.deleteQuote(id);
