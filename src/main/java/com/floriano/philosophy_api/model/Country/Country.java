@@ -21,7 +21,6 @@ public class Country {
     private Long id;
 
     private String name;
-    private String isoCode;
     private Integer startYear;
     private Integer endYear;
     private String region;

@@ -14,6 +14,9 @@ public class PhilosopherMapper {
         Philosopher philosopher = new Philosopher();
 
         philosopher.setName(dto.getName());
+        philosopher.setIepLink(dto.getIepLink());
+        philosopher.setSpeLink(dto.getSpeLink());
+        philosopher.setImg(dto.getImg());
         philosopher.setBirthYear(dto.getBirthYear());
         philosopher.setDeathYear(dto.getDeathYear());
         philosopher.setBio(dto.getBio());
@@ -26,6 +29,9 @@ public class PhilosopherMapper {
         return new PhilosopherResponseDTO(
                 philosopher.getId(),
                 philosopher.getName(),
+                philosopher.getIepLink(),
+                philosopher.getSpeLink(),
+                philosopher.getImg(),
                 philosopher.getBirthYear(),
                 philosopher.getDeathYear(),
                 philosopher.getBio(),

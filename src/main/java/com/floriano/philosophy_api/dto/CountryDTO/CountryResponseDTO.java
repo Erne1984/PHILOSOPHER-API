@@ -14,7 +14,6 @@ import java.util.List;
 public class CountryResponseDTO {
 
     private String name;
-    private String isoCode;
     private Integer startYear;
     private Integer endYear;
     private String region;

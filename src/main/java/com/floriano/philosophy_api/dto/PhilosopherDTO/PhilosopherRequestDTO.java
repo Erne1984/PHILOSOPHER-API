@@ -17,6 +17,10 @@ public class PhilosopherRequestDTO {
     @NotBlank(message = "Nome é obrigatório")
     private String name;
 
+    private String iepLink;
+    private String speLink;
+    private String img;
+
     @Min(value = -1000, message = "Ano de nascimento inválido")
     @Max(value = 2025, message = "Ano de nascimento inválido")
     private int birthYear;

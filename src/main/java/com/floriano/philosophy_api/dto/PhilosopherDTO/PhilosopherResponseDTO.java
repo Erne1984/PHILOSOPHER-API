@@ -15,6 +15,9 @@ public class PhilosopherResponseDTO {
 
     private Long id;
     private String name;
+    private String iepLink;
+    private String speLink;
+    private String img;
     private int birthYear;
     private int deathYear;
     private String bio;

@@ -11,7 +11,6 @@ public class CountryMapper {
         Country country = new Country();
 
         country.setName(dto.getName());
-        country.setIsoCode(dto.getIsoCode());
         country.setStartYear(dto.getStartYear());
         country.setEndYear(dto.getEndYear());
         country.setRegion(dto.getRegion());
@@ -22,7 +21,6 @@ public class CountryMapper {
     public static CountryResponseDTO toDTO(Country country) {
         return new CountryResponseDTO(
                 country.getName(),
-                country.getIsoCode(),
                 country.getStartYear(),
                 country.getEndYear() != null ? country.getEndYear() : null,
                 country.getRegion() != null ? country.getRegion() : null,

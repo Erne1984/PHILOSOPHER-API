@@ -11,10 +11,6 @@ public class CountryUpdateHelper {
             country.setName(dto.getName());
         }
 
-        if (dto.getIsoCode() != null || dto.getIsoCode() == null) {
-            country.setIsoCode(dto.getIsoCode());
-        }
-
         if (dto.getStartYear() != null) {
             country.setStartYear(dto.getStartYear());
         }

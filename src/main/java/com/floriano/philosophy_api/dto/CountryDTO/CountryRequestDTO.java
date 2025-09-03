@@ -12,7 +12,6 @@ import lombok.Setter;
 public class CountryRequestDTO {
 
     private String name;
-    private String isoCode;
     private Integer startYear;
     private Integer endYear;
     private String region;
