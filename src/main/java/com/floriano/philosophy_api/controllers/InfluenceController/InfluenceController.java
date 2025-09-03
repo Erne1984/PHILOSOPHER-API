@@ -6,6 +6,7 @@ import com.floriano.philosophy_api.mapper.InfluenceMapper;
 import com.floriano.philosophy_api.model.Influence.Influence;
 import com.floriano.philosophy_api.payload.ApiResponse;
 import com.floriano.philosophy_api.services.InfluenceService.InfluenceService;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/v1/influences")
+@Hidden
 public class InfluenceController {
 
     private final InfluenceService influenceService;

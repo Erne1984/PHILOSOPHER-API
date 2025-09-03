@@ -26,6 +26,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ThemeService {
@@ -53,7 +54,9 @@ public class ThemeService {
                 .orElseThrow(() -> new ThemeIdNotFoundException("Theme not found"));
         List<PhilosopherResponseDTO> dtos = theme.getPhilosophers()
                 .stream()
-                .map(p -> new PhilosopherResponseDTO(p.getId(), p.getName(), p.getBirthYear(), p.getDeathYear(), p.getBio(), p.getCountry().getName(), p.getSchoolOfThoughts().get(0).getName()))
+                .map(p -> new PhilosopherResponseDTO(p.getId(), p.getName(), p.getBirthYear(), p.getDeathYear(), p.getBio(), p.getCountry().getName(), p.getSchoolOfThoughts().stream()
+                        .map(s -> s.getName())
+                        .collect(Collectors.toList())))
                 .toList();
         return new PageImpl<>(dtos, pageable, dtos.size());
     }

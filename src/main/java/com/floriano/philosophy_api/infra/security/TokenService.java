@@ -43,8 +43,8 @@ public class TokenService {
                     .build()
                     .verify(token)
                     .getSubject();
-        } catch(JWTCreationException e) {
-            return "";
+        }  catch (Exception e) {
+            return null;
         }
     }
 

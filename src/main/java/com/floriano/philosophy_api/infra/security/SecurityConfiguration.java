@@ -21,6 +21,7 @@ public class SecurityConfiguration {
     @Autowired
     SecurityFilter securityFilter;
 
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
@@ -29,8 +30,16 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
-                        .requestMatchers((HttpMethod.POST), "/products").hasRole("ADMIN")
-                        .anyRequest().permitAll()) // DURING DEVELOPMENT
+
+                        .requestMatchers(HttpMethod.POST, "/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/**").authenticated()
+
+                        .requestMatchers(HttpMethod.DELETE, "/**").hasRole("ADMIN")
+
+                        .requestMatchers(HttpMethod.GET, "/**").permitAll()
+
+                        .anyRequest().authenticated()
+                )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }

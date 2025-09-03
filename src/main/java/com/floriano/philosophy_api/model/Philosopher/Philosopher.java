@@ -28,8 +28,13 @@ public class Philosopher {
     private Long id;
 
     private String name;
-    private int birthYear;
-    private int deathYear;
+    private Integer birthYear;
+    private Integer deathYear;
+
+    private String iepLink;
+    private String speLink;
+
+    private String img;
 
     @Column(columnDefinition = "TEXT")
     private String bio;
@@ -38,16 +43,16 @@ public class Philosopher {
     private Country country;
 
     @OneToMany(mappedBy = "philosopher")
-    private List<Quote> quotes;
+    private List<Quote> quotes = new ArrayList<>();
 
     @OneToMany(mappedBy = "philosopher")
-    private List<Work> works;
+    private List<Work> works = new ArrayList<>();
 
     @OneToMany(mappedBy = "influencer")
-    private List<Influence> influenced;
+    private List<Influence> influenced = new ArrayList<>();
 
     @OneToMany(mappedBy = "influenced")
-    private List<Influence> influencedBy;
+    private List<Influence> influencedBy = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(

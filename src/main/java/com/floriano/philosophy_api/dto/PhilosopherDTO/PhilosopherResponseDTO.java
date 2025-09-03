@@ -19,7 +19,7 @@ public class PhilosopherResponseDTO {
     private int deathYear;
     private String bio;
     private String country;
-    private String schoolOfThoughtName;
+    private List<String> schoolOfThoughtName;
 
 
 }

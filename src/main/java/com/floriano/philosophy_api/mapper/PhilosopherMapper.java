@@ -30,7 +30,11 @@ public class PhilosopherMapper {
                 philosopher.getDeathYear(),
                 philosopher.getBio(),
                 philosopher.getCountry() != null ? philosopher.getCountry().getName() : null,
-                philosopher.getSchoolOfThoughts() != null ? philosopher.getSchoolOfThoughts().get(0).getName() : null
+                philosopher.getSchoolOfThoughts() != null
+                        ? philosopher.getSchoolOfThoughts().stream()
+                        .map(s -> s.getName())
+                        .collect(Collectors.toList())
+                        : List.of()
         );
     }
 }

@@ -35,6 +35,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class PhilosopherService {
@@ -203,41 +204,47 @@ public class PhilosopherService {
             throw new PhilosopherAlreadyExistsException("Filósofo com esse nome já existe");
         }
 
-        Country country = countryRepository.findById(dto.getCountryId())
-                .orElseThrow(() -> new IllegalArgumentException("País não encontrado"));
+        Country country = null;
+        if (dto.getCountryId() != null) {
+            country = countryRepository.findById(dto.getCountryId())
+                    .orElseThrow(() -> new IllegalArgumentException("País não encontrado"));
+        }
 
         Philosopher philosopher = PhilosopherMapper.toEntity(dto, country);
 
-        if (dto.getQuotesId() != null && !dto.getQuotesId().isEmpty()) {
-            var quotes = quoteRepository.findAllById(dto.getQuotesId());
-            if (quotes.size() != dto.getQuotesId().size()) {
-                throw new IllegalArgumentException("Uma ou mais citações não foram encontradas.");
-            }
-            philosopher.setQuotes(quotes);
-        }
-
-        if (dto.getSchoolOfThoughtsIds() != null && !dto.getSchoolOfThoughtsIds().isEmpty()) {
-            var schools = schoolOfThoughtRepository.findAllById(dto.getSchoolOfThoughtsIds());
-            if (schools.size() != dto.getSchoolOfThoughtsIds().size()) {
-                throw new IllegalArgumentException("Uma ou mais escolas de pensamento não foram encontradas.");
-            }
-            for (var s : schools) {
-                philosopher.addSchoolOfThought(s);
+        if (dto.getQuotesId() != null) {
+            var cleanedIds = dto.getQuotesId().stream()
+                    .filter(Objects::nonNull)
+                    .toList();
+            if (!cleanedIds.isEmpty()) {
+                var quotes = quoteRepository.findAllById(cleanedIds);
+                philosopher.setQuotes(quotes);
             }
         }
 
-        if (dto.getThemesIds() != null && !dto.getThemesIds().isEmpty()) {
-            var themes = themeRepository.findAllById(dto.getThemesIds());
-            if (themes.size() != dto.getThemesIds().size()) {
-                throw new IllegalArgumentException("Um ou mais temas não foram encontrados.");
+        if (dto.getSchoolOfThoughtsIds() != null) {
+            var cleanedIds = dto.getSchoolOfThoughtsIds().stream()
+                    .filter(Objects::nonNull)
+                    .toList();
+            if (!cleanedIds.isEmpty()) {
+                var schools = schoolOfThoughtRepository.findAllById(cleanedIds);
+                schools.forEach(philosopher::addSchoolOfThought);
             }
-            for (var t : themes) {
-                philosopher.addTheme(t);
+        }
+
+        if (dto.getThemesIds() != null) {
+            var cleanedIds = dto.getThemesIds().stream()
+                    .filter(Objects::nonNull)
+                    .toList();
+            if (!cleanedIds.isEmpty()) {
+                var themes = themeRepository.findAllById(cleanedIds);
+                themes.forEach(philosopher::addTheme);
             }
         }
 
         return philosopherRepository.save(philosopher);
     }
+
 
     public Philosopher updatePhilosopher(Long id, PhilosopherRequestDTO dto) {
         Philosopher philosopher = philosopherRepository.findById(id)

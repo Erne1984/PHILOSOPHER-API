@@ -2,8 +2,11 @@ package com.floriano.philosophy_api.controllers;
 
 import com.floriano.philosophy_api.dto.AuthDto.AutheticationDto;
 import com.floriano.philosophy_api.dto.AuthDto.RegisterDto;
+import com.floriano.philosophy_api.mapper.PageMapper;
 import com.floriano.philosophy_api.model.User.User;
 import com.floriano.philosophy_api.infra.security.TokenService;
+import com.floriano.philosophy_api.model.User.UserRole;
+import com.floriano.philosophy_api.payload.ResponseFactory;
 import com.floriano.philosophy_api.repositories.UserRepository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +38,7 @@ public class AuthenticationController {
 
         var token = tokenService.generateToken((User) auth.getPrincipal());
 
-        return ResponseEntity.ok(token);
+        return ResponseFactory.ok("Token retrieved ", token);
     }
 
     @PostMapping("/register")
@@ -44,10 +47,13 @@ public class AuthenticationController {
         if(this.userRepository.findByEmail(data.email()) != null) return ResponseEntity.badRequest().build();
 
         String encryptedPassword = new BCryptPasswordEncoder().encode(data.password());
-        User newUser = new User(data.email(), encryptedPassword, data.role());
+
+        UserRole user = UserRole.USER;
+
+        User newUser = new User(data.email(), encryptedPassword, user);
 
         this.userRepository.save(newUser);
 
-        return ResponseEntity.ok().build();
+        return ResponseFactory.ok("Registred with sucess ", null);
     }
 }
