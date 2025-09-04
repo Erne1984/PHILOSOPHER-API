@@ -20,22 +20,11 @@ public class CountryMapper {
 
     public static CountryResponseDTO toDTO(Country country) {
         return new CountryResponseDTO(
+                country.getId(),
                 country.getName(),
                 country.getStartYear(),
                 country.getEndYear() != null ? country.getEndYear() : null,
-                country.getRegion() != null ? country.getRegion() : null,
-                country.getPhilosophers() != null ? country.getPhilosophers()
-                        .stream()
-                        .map((philosopher -> philosopher.getName()))
-                        .toList()
-                        :
-                        null,
-                country.getWorks() != null ? country.getWorks()
-                        .stream()
-                        .map((work -> work.getTitle()))
-                        .toList()
-                        :
-                        null
+                country.getRegion() != null ? country.getRegion() : null
         );
     }
 }

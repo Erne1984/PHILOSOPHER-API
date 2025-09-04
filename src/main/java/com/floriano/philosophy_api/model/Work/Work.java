@@ -42,7 +42,7 @@ public class Work {
 
     @ManyToMany
     @JoinTable(
-            name = "work_schoolsOfThought",
+            name = "work_schools_of_thought",
             joinColumns = @JoinColumn(name = "work_id"),
             inverseJoinColumns = @JoinColumn(name = "school_of_thought_id")
     )

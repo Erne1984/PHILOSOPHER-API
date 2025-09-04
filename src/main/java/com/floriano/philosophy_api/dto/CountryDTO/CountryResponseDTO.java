@@ -13,11 +13,9 @@ import java.util.List;
 @NoArgsConstructor
 public class CountryResponseDTO {
 
+    private Long id;
     private String name;
     private Integer startYear;
     private Integer endYear;
     private String region;
-
-    private List<String> philosophers;
-    private List<String> works;
 }
