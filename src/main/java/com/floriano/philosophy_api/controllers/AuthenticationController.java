@@ -46,16 +46,18 @@ public class AuthenticationController {
     @PostMapping("/register")
     public ResponseEntity register(@RequestBody RegisterDto data) {
 
-        if(this.userRepository.findByEmail(data.email()) != null) return ResponseEntity.badRequest().build();
+        if (this.userRepository.findByEmail(data.email()) != null) {
+            return ResponseEntity.badRequest().body("Email already registered");
+        }
 
         String encryptedPassword = new BCryptPasswordEncoder().encode(data.password());
 
-        UserRole user = UserRole.USER;
+        UserRole role = (data.role() != null) ? data.role() : UserRole.USER;
 
-        User newUser = new User(data.email(), encryptedPassword, user);
+        User newUser = new User(data.email(), encryptedPassword, role);
 
         this.userRepository.save(newUser);
 
-        return ResponseFactory.ok("Registred with sucess ", null);
+        return ResponseFactory.ok("Registered with success", null);
     }
 }
