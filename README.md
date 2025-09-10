@@ -95,7 +95,7 @@ Abaixo um exemplo de como consultar filósofos com paginação e ordenação:
         "country": "Ancient Greece",
         "schoolOfThoughtName": ["Socratic Philosophy"]
       },
-      ... // Outros filósofos
+      // Outros filósofos
     ],
     "page": 0,
     "size": 10,
