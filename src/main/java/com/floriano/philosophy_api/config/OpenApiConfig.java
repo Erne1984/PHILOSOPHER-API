@@ -37,7 +37,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
                 ),
                 @Server(
                         description = "Production Environment",
-                        url = "https://api.yourproject.com"
+                        url = "https://philosopher-api.onrender.com/api/"
                 )
         },
         tags = {
